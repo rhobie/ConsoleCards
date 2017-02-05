@@ -19,43 +19,164 @@ namespace ConsoleCards
 
     class GameLoop
     {
+        public static int RunningPlayerCount;
+        public static int NPCtotal = 3;
+
+        public static bool PlayersHaveCards = false;
+
+        List<NPC> AllPlayers = new List<NPC>();
+
         public GameLoop()
         {
-            var myDeck = new Deck();
-            var discardPile = new DiscardPile();
+            //create player:
+            //var player = new Player();
 
-            myDeck.ShowAllCards();
+            //create NPCs
+            for (int i = 0; i < NPCtotal; i++)
+            {
+                AllPlayers.Add(new NPC());
+            }
 
-            myDeck.Shuffle();
+            //create dealer and deck
+            var dealer = new Dealer(0);
+            dealer.CreateDeck();
 
-            myDeck.ShowAllCards();
+            Debug.ShowCards("THE DEALER", dealer.dealerDeck.Cards);
+
+            //dealer shuffles
+            dealer.ShuffleDeck();
+
+            Debug.ShowCards("THE DEALER", dealer.dealerDeck.Cards);
+
+            //dealer deals
+            int CardsPerPlayer = dealer.dealerDeck.Cards.Count / NPCtotal;
+            dealer.Deal(AllPlayers, CardsPerPlayer);
+
+            for (int i = 0; i < RunningPlayerCount; i++)
+            {
+                AllPlayers[i].RevealHand();
+            }
+
+            Debug.ShowCards("THE DEALER", dealer.dealerDeck.Cards);
+
+            Console.WriteLine("GAME START");
+
+            while (PlayersHaveCards)
+            {
+                CheckRemainingCards(AllPlayers);
+
+                for (int i = 0; i < AllPlayers.Count; i++)
+                {
+                    AllPlayers[i].Play();
+                }
+                DiscardPile.ShowTopCard();
+            }
+
+            Console.WriteLine("GAME OVER");
+        }
+
+        public void CheckRemainingCards(List<NPC> allPlayers)
+        {
+            if (DiscardPile.Cards.Count >= Deck.DeckRules.CardCount)
+            {
+                PlayersHaveCards = false;
+            }
         }
     }
-    class Hand
+
+    class NPC
     {
-        private List<Card> cards = new List<Card>();
-        internal List<Card> Cards { get => cards; set => cards = value; }
+        public int Id;
+        public List<Card> Hand { get; set; }
+        public bool hasCards = false;
 
+        public NPC()
+        {
+            //change to delegate later
+            GameLoop.RunningPlayerCount++;
+            Id = GameLoop.RunningPlayerCount;
+
+            Hand = new List<Card>();
+        }
+
+        public int SelectCardFromHand()
+        {
+            int index;
+            //Card SelectedCard;
+
+            Card TopDiscard = DiscardPile.GetTopCard();
+            if (TopDiscard == null && Hand.Contains(Hand.Find(x => x.GetId() == "StartingCard")))
+            {
+                index = Hand.FindIndex(x => x.GetId() == "StartingCard");
+            }
+            else
+            {
+                //need to complete this:
+                index = 0;// new Card(Suit.clubs, Value.ace);
+            }
+
+            return index;
+        }
+
+        public void Play()
+        {
+            if (Hand.Count != 0)
+            {
+                int index = SelectCardFromHand();
+
+                if (Hand[index] == null)
+                {
+                    Console.WriteLine("NPC {0} PASSES", Id);
+                }
+                else
+                {
+                    Console.WriteLine("NPC {0} Plays {1} of {2}", Id.ToString(), Hand[index].Value, Hand[index].Suit);
+                   
+                    DiscardPile.Cards.Add(Hand[index]);
+                    Hand.RemoveAt(index);
+                }
+
+            }
+        }
+
+        public void RevealHand()
+        {
+            Debug.ShowCards("NPC " + Id.ToString(), Hand);
+        }
     }
-
 
     class DiscardPile
     {
-        private int cardCount = 0;
+        public static int CardCount = 0;
 
-        private List<Card> cards = new List<Card>();
-        internal List<Card> Cards { get => cards; set => cards = value; }
+        private static List<Card> cards = new List<Card>();
+        public static List<Card> Cards { get => cards; set => cards = value; }
 
-        public DiscardPile()
+        public static Card GetTopCard()
         {
+            if (cards.Count == 0)
+            {
+                return null;
+            }
+            else
+            {
+                Card topCard = Cards[Cards.Count - 1];
+                return topCard;
+            }
 
         }
 
+        public static void ShowTopCard()
+        {
+            Card topCard = Cards[Cards.Count - 1];
+            Console.WriteLine("\nCurrent Card: {0} of {1}", topCard.Value, topCard.Suit);
+        }
     }
+
 
     class Deck
     {
-        static class DeckRules
+        public static class DeckRules
         {
             public const int CardCount = 54;
             public const int SuitCount = 3; // (zero based)
@@ -92,34 +213,37 @@ namespace ConsoleCards
                 suitPosition++;
             }
 
+            //add jokers:
             for (int i = 0; i < DeckRules.JokerCount; i++)
             {
                 Cards.Add(new Card(Suit.wild, Value.joker));
             }
+
+            //set id of three of clubs to "StartingCard"
+            Cards[0].Id = "StartingCard";
 
             Console.WriteLine("\nDECK GENERATED.");
 
             return Cards;
         }
 
-        public void ShowAllCards()
-        {
-            Console.WriteLine("\nSHOWING ALL CARDS...");
-
-            foreach (var Card in Cards)
-            {
-                Console.WriteLine("{0,6} of {1}", Card.Value.ToString(), Card.Suit.ToString());
-            }
-
-        }
-
         public void Shuffle()
         {
-            Console.WriteLine("\nSHUFFLING...");
             Cards.Shuffle();
         }
 
     }
+
+
+
+
+
+
+
+
+
+
+
 
     static class MyExtensions
     {

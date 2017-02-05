@@ -1,7 +1,10 @@
-﻿namespace ConsoleCards
+﻿using System;
+
+namespace ConsoleCards
 {
-    class Card
+    public class Card
     {
+        public string Id;
         private Suit suit;
         private Value value;
 
@@ -19,6 +22,11 @@
         {
             this.suit = _suit;
             this.value = _value;
+        }
+
+        internal string GetId()
+        {
+            return Id;
         }
     }
 
