@@ -18,7 +18,7 @@ namespace ConsoleCards
         {
             dealerDeck = new Deck();
         }
-
+        
         public void ShuffleDeck()
         {
             Console.WriteLine("\nSHUFFLING..");
@@ -38,9 +38,13 @@ namespace ConsoleCards
                     Card card = dealerDeck.Cards[0];
                     dealerDeck.Cards.RemoveAt(0);
                     allPlayers[playerId].Hand.Add(card);
-                    allPlayers[playerId].hasCards = true;
                 }
             }
+            for (int i = 0; i < allPlayers.Count; i++)
+            {
+                allPlayers[i].hasCards = true;
+            }
+            
         }
 
     }

@@ -4,9 +4,15 @@ namespace ConsoleCards
 {
     public class Card
     {
-        public string Id;
+        
         private Suit suit;
         private Value value;
+        private int tier;
+
+        public int Tier
+        {
+            get { return this.tier; }
+        }
 
         public Suit Suit
         {
@@ -22,11 +28,18 @@ namespace ConsoleCards
         {
             this.suit = _suit;
             this.value = _value;
+
+            int tierCalc = ((int)Value + 1) *10;
+            if (_suit == Suit.clubs &&  _value == Value.three)
+            {
+                tierCalc--;
+            }
+            this.tier = tierCalc;
         }
 
-        internal string GetId()
+        internal int GetTeir()
         {
-            return Id;
+            return Tier;
         }
     }
 
