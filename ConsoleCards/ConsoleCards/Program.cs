@@ -22,6 +22,7 @@ namespace ConsoleCards
         public GameLoop()
         {
             var myDeck = new Deck();
+            var discardPile = new DiscardPile();
 
             myDeck.ShowAllCards();
 
@@ -30,7 +31,27 @@ namespace ConsoleCards
             myDeck.ShowAllCards();
         }
     }
+    class Hand
+    {
+        private List<Card> cards = new List<Card>();
+        internal List<Card> Cards { get => cards; set => cards = value; }
 
+    }
+
+
+    class DiscardPile
+    {
+        private int cardCount = 0;
+
+        private List<Card> cards = new List<Card>();
+        internal List<Card> Cards { get => cards; set => cards = value; }
+
+        public DiscardPile()
+        {
+
+        }
+
+    }
 
     class Deck
     {
@@ -125,54 +146,6 @@ namespace ConsoleCards
         {
             get { return Local ?? (Local = new Random(unchecked(Environment.TickCount * 31 + Thread.CurrentThread.ManagedThreadId))); }
         }
-    }
-
-    class Card
-    {
-        private Suit suit;
-        private Value value;
-
-        public Suit Suit
-        {
-            get { return this.suit; }
-        }
-
-        public Value Value
-        {
-            get { return this.value; }
-        }
-
-        public Card(Suit _suit, Value _value)
-        {
-            this.suit = _suit;
-            this.value = _value;
-        }
-    }
-    public enum Suit
-    {
-        clubs,
-        spades,
-        diamonds,
-        hearts,
-        wild,
-    }
-
-    public enum Value
-    {
-        three,
-        four,
-        five,
-        six,
-        seven,
-        eight,
-        nine,
-        ten,
-        jack,
-        queen,
-        king,
-        ace,
-        two,
-        joker
     }
 
 }
