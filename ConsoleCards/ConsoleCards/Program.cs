@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,29 +17,6 @@ namespace ConsoleCards
         }
     }
 
-    class PresidentsAndAssholes
-    {
-        public static int NpcTotal { get => npcTotal; }
-        private static int npcTotal;
-
-        public PresidentsAndAssholes(int rounds, int _npcTotal)
-        {
-            npcTotal = _npcTotal;
-
-            for (int i = 1; i <= rounds; i++)
-            {
-                var game = new Game();
-            }
-        }
-    }
-
-    public static class GameLists
-    {
-        public static List<NPC> PlayersInRound = new List<NPC>();
-        public static List<NPC> ActivePlayers = new List<NPC>();
-        public static List<NPC> InactivePlayers = new List<NPC>(); //not implemented but will need when rounds are in
-    }
-
     public class Game
     {
         public static bool PlayersHaveCards = false;
@@ -50,29 +26,23 @@ namespace ConsoleCards
             //create NPCs
             for (int i = 0; i < PresidentsAndAssholes.NpcTotal; i++)
             {
-                GameLists.ActivePlayers.Add(new NPC(GameLists.ActivePlayers.Count));
-                GameLists.PlayersInRound.Add(GameLists.ActivePlayers[i]);
+                GameLists.SeatingPlan.Add(new NPC(GameLists.SeatingPlan.Count));
+                GameLists.PlayersInRound.Add(GameLists.SeatingPlan[i]);
             }
 
-            //create dealer and deck
+            //Dealer shuffles deck
             var dealer = new Dealer(0);
             dealer.CreateDeck();
-
-            Debug.ShowCards("THE DEALER", dealer.dealerDeck.Cards);
-
-            //dealer shuffles
             dealer.ShuffleDeck();
 
-            Debug.ShowCards("THE DEALER", dealer.dealerDeck.Cards);
-
-            //dealer deals
+            //Dealer Deals all cards to players
             int CardsPerPlayer = dealer.dealerDeck.Cards.Count / PresidentsAndAssholes.NpcTotal;
-            dealer.Deal(GameLists.ActivePlayers, CardsPerPlayer);
-            SortPlayerCards();
+            dealer.Deal(GameLists.SeatingPlan, CardsPerPlayer);
+            
+            //Players Sort their hands
+            SortPlayerHands();
 
             ShowAllHands();
-
-            Debug.ShowCards("THE DEALER", dealer.dealerDeck.Cards);
 
             Console.WriteLine("GAME START");
 
@@ -85,65 +55,49 @@ namespace ConsoleCards
 
         public void StartGameLoop()
         {
+            var discardPileMain = new DiscardPile();
+            var discardPileRound = new RoundDiscardPile();
+
+            int roundWinnerIndex;
+
             while (PlayersHaveCards)
             {
                 //ROUND:
+                var roundLoop = new Round();
                 if (GameLists.PlayersInRound.Count > 1)
                 {
-                    for (int i = 0; i < GameLists.PlayersInRound.Count; i++)
+                    foreach (var player in GameLists.SeatingPlan)
                     {
-                        GameLists.PlayersInRound[i].Play();
+                        if (GameLists.PlayersInRound.Contains(player))
+                        {
+                            Card cardToPlay = player.SelectCardFromHand(discardPileMain.GetTopCard(), discardPileRound.GetTopCard());
+
+
+                            //int selectedCard = player.SelectCardFromHand(discardPileMain.GetTopCard(), discardPileRound.GetTopCard());
+                            Console.WriteLine("NPC {0} Plays {1}", player.Id.ToString(), cardToPlay);
+                            discardPileRound.Cards.Add(player.TakeCardFromHand(cardToPlay));
+                            
+
+                        }
                     }
                 }
                 else
                 {
+                    //HERE
+                    //GameLists.PlayersInRound
                     //NEW ROUND:
                     Console.WriteLine("\nNEW ROUND:");
-                    ResetPlayersInRound();
-                    MoveRoundPileToDiscardPile();
+                    roundLoop.ResetPlayersInRound();
+                    discardPileRound.MoveRoundPileToDiscardPile(discardPileMain);
                 }
                 CheckRemainingCards();
             }
             
         }
 
-        public void MoveRoundPileToDiscardPile()
+        public void SortPlayerHands()
         {
-            foreach (var card in RoundPile.Cards)
-            {
-                DiscardPile.Cards.Add(card);
-            }
-            RoundPile.Cards.Clear();
-        }
-
-        public void ResetPlayersInRound()
-        {
-            //need to make the player who won the round start the next round but still keep the same play order
-            //GameLists.PlayersInRound.Clear();
-            foreach (var player in GameLists.ActivePlayers)
-            {
-                if (!GameLists.PlayersInRound.Contains(player) && player.Hand.Count != 0)
-                {
-                    GameLists.PlayersInRound.Add(player);
-                }
-                if (player.Hand.Count == 0)
-                {
-                    GameLists.InactivePlayers.Add(player);
-                }
-            }
-            //remove inactive players from active player list
-            foreach (var player in GameLists.InactivePlayers)
-            {
-                if (GameLists.ActivePlayers.Contains(player))
-                {
-                    GameLists.ActivePlayers.Remove(player);
-                }
-            }
-        }
-
-        public void SortPlayerCards()
-        {
-            foreach (var player in GameLists.ActivePlayers)
+            foreach (var player in GameLists.SeatingPlan)
             {
                 player.SortCards();
             }
@@ -152,7 +106,7 @@ namespace ConsoleCards
         public void CheckRemainingCards()
         {
             PlayersHaveCards = false;
-            foreach (var player in GameLists.ActivePlayers)
+            foreach (var player in GameLists.SeatingPlan)
             {
                 if (player.Hand.Count > 0)
                 {
@@ -163,218 +117,50 @@ namespace ConsoleCards
 
         public void ShowAllHands()
         {
-            for (int i = 0; i < GameLists.ActivePlayers.Count; i++)
+            for (int i = 0; i < GameLists.SeatingPlan.Count; i++)
             {
-                GameLists.ActivePlayers[i].RevealHand();
+                GameLists.SeatingPlan[i].RevealHand();
             }
         }
     }
 
-    public class NPC
+    public class RoundDiscardPile : DiscardPile
     {
-        public int Id;
-        public List<Card> Hand { get; set; }
-        public bool hasCards = false;
-
-        public NPC(int _activePlayers)
+        //difference from RoundDiscardPile: (need to make them inheret)
+        public void MoveRoundPileToDiscardPile(DiscardPile _discardPile)
         {
-            Id = _activePlayers + 1;
-            Hand = new List<Card>();
-        }
-
-        public void SortCards()
-        {
-            Hand = Hand.OrderBy(x => x.Tier).ToList();
-        }
-
-        public int SelectCardFromHand()
-        {
-            int index;
-
-            Card TopDiscard = DiscardPile.GetTopCard();
-            Card TopRoundCard = RoundPile.GetTopCard();
-
-            if (TopDiscard == null && TopRoundCard == null)
+            foreach (var card in Cards)
             {
-                if (Hand.Contains(Hand.Find(x => x.Tier == 9))) //three of clubs is the starting card
-                {
-                    index = Hand.FindIndex(x => x.Tier == 9);
-                }
-                else
-                {
-                    //NPC does not pass before the round has started.
-                    index = -9;
-                }
+                _discardPile.Cards.Add(card);
             }
-            else if (TopRoundCard != null && Hand.Contains(Hand.Find(x => x.Tier > TopRoundCard.Tier)))
-            {
-                //add next lot of decsion making here:
-                index = Hand.FindIndex(x => x.Tier > TopRoundCard.Tier);
-            }
-            else if (TopRoundCard == null)
-            {
-                index = 0; //play first card in hand
-            }
-            else
-            {
-                index = -1;
-            }
-
-            return index;
+            Cards.Clear();
         }
 
-        public void Play()
-        {
-            if (Hand.Count != 0)
-            {
-                int index = SelectCardFromHand();
-
-                if (index == -9)
-                {
-                    //First round, no starting card in hand (SKIP)
-                }
-                else if (index == -1)
-                {
-                    Pass();
-                }
-                else
-                {
-                    Console.WriteLine("NPC {0} Plays {1} of {2}", Id.ToString(), Hand[index].Value, Hand[index].Suit);
-
-                    RoundPile.Cards.Add(Hand[index]);
-                    Hand.RemoveAt(index);
-                }
-            }
-        }
-
-        public void Pass()
-        {
-            Console.WriteLine("NPC {0} PASSES", Id);
-            GameLists.PlayersInRound.Remove(this);
-        }
-
-        public void RevealHand()
-        {
-            Debug.ShowCards("NPC " + Id.ToString(), Hand);
-        }
     }
 
-    class RoundPile //: DiscardPile
+    public class DiscardPile
     {
-        private static List<Card> cards = new List<Card>();
-        public static List<Card> Cards { get => cards; set => cards = value; }
+        public List<Card> Cards { get; set; }
 
-        public static Card GetTopCard()
+        public DiscardPile()
         {
-            if (cards.Count == 0)
+            Cards = new List<Card>();
+        }
+
+        public Card GetTopCard()
+        {
+            Card topCard;
+            if (Cards.Count == 0)
             {
-                return null;
-            }
-            else
-            {
-                Card topCard = Cards[Cards.Count - 1];
+                //return null card
+                topCard = new Card();
                 return topCard;
             }
-        }
-
-        public static void ShowTopCard()
-        {
-            if (Cards.Count != 0)
-            {
-                Card topCard = Cards[Cards.Count - 1];
-                Console.WriteLine("\nCurrent Card: {0} of {1}", topCard.Value, topCard.Suit);
-            }
             else
             {
-                Console.WriteLine("\nCurrent Card: none");
-            }
-        }
-    }
-
-    class DiscardPile
-    {
-        private static List<Card> cards = new List<Card>();
-        public static List<Card> Cards { get => cards; set => cards = value; }
-
-        public static Card GetTopCard()
-        {
-            if (cards.Count == 0)
-            {
-                return null;
-            }
-            else
-            {
-                Card topCard = Cards[Cards.Count - 1];
+                topCard = Cards[Cards.Count - 1];
                 return topCard;
             }
-        }
-
-        public static void ShowTopCard()
-        {
-            if (Cards.Count != 0)
-            {
-                Card topCard = Cards[Cards.Count - 1];
-                Console.WriteLine("\nCurrent Card: {0} of {1}", topCard.Value, topCard.Suit);
-            }
-            else
-            {
-                Console.WriteLine("\nCurrent Card: none");
-            }
-        }
-    }
-
-
-    class Deck
-    {
-        public static class DeckRules
-        {
-            public const int CardCount = 54;
-            public const int SuitCount = 3; // (zero based)
-            public const int ValueCount = 12; // (zero based) //including jokers 13
-            public const int JokerCount = 2;
-        }
-
-        private List<Card> cards = new List<Card>();
-        internal List<Card> Cards { get => cards; set => cards = value; }
-
-        public Deck()
-        {
-            Cards = GenerateDeck();
-        }
-
-        public List<Card> GenerateDeck()
-        {
-            Console.WriteLine("\nGENERATING DECK...");
-
-            var Cards = new List<Card>();
-
-            int suitPosition = 0;
-            int valuePosition = 0;
-            while (suitPosition <= DeckRules.SuitCount)
-            {
-                while (valuePosition <= DeckRules.ValueCount)
-                {
-                    Cards.Add(new Card((Suit)suitPosition, (Value)valuePosition));
-                    valuePosition++;
-                }
-                valuePosition = 0;
-                suitPosition++;
-            }
-
-            //add jokers:
-            for (int i = 0; i < DeckRules.JokerCount; i++)
-            {
-                Cards.Add(new Card(Suit.wild, Value.joker));
-            }
-
-            Console.WriteLine("\nDECK GENERATED.");
-
-            return Cards;
-        }
-
-        public void Shuffle()
-        {
-            Cards.Shuffle();
         }
     }
 
