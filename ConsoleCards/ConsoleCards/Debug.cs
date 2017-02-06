@@ -23,7 +23,7 @@ namespace ConsoleCards
             foreach (var Card in Cards)
             {
                 num++;
-                Console.WriteLine(" #{2,2} {0,6} of {1}", Card.Value.ToString(), Card.Suit.ToString(), num);
+                Console.WriteLine(" #{0,2} T:{1,3}  {2,6} of {3}", num, Card.Tier, Card.Value.ToString(), Card.Suit.ToString());
             }
         }
     }
