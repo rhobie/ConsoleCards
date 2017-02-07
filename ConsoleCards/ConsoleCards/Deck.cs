@@ -7,14 +7,15 @@ namespace ConsoleCards
     {
         public static class DeckRules
         {
-            public const int CardCount = 54;
-            public const int SuitCount = 3; // (zero based)
-            public const int ValueCount = 12; // (zero based) //including jokers 13
-            public const int JokerCount = 2;
+            public const int cardCount = 54;
+            public const int suitCount = 3; // (zero based)
+            public const int valueCount = 12; // (zero based) //including jokers 13
+            public const int jokerCount = 2;
         }
 
-        private List<Card> cards = new List<Card>();
-        internal List<Card> Cards { get => cards; set => cards = value; }
+        private List<Card> _cards = new List<Card>();
+        internal List<Card> Cards { get => _cards; set => _cards = value; }
+
 
         public Deck()
         {
@@ -29,21 +30,25 @@ namespace ConsoleCards
 
             int suitPosition = 0;
             int valuePosition = 0;
-            while (suitPosition <= DeckRules.SuitCount)
+            int id = 0;
+            while (suitPosition <= DeckRules.suitCount)
             {
-                while (valuePosition <= DeckRules.ValueCount)
+                while (valuePosition <= DeckRules.valueCount)
                 {
-                    Cards.Add(new Card((Suit)suitPosition, (Value)valuePosition));
+                    Cards.Add(new Card(id.ToString(), (Suit)suitPosition, (Value)valuePosition));
                     valuePosition++;
+                    id++;
                 }
                 valuePosition = 0;
                 suitPosition++;
+                id++;
             }
 
             //add jokers:
-            for (int i = 0; i < DeckRules.JokerCount; i++)
+            for (int i = 0; i < DeckRules.jokerCount; i++)
             {
-                Cards.Add(new Card(Suit.wild, Value.joker));
+                id++;
+                Cards.Add(new Card(id.ToString(), Suit.Wild, Value.Joker));
             }
 
             Console.WriteLine("\nDECK GENERATED.");

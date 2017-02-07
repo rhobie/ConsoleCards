@@ -2,22 +2,20 @@
 {
     public enum Value
     {
-        three,
-        four,
-        five,
-        six,
-        seven,
-        eight,
-        nine,
-        ten,
-        jack,
-        queen,
-        king,
-        ace,
-        two,
-        joker,
+        Three,
+        Four,
+        Five,
+        Six,
+        Seven,
+        Eight,
+        Nine,
+        Ten,
+        jJack,
+        Queen,
+        King,
+        Ace,
+        Two,
+        Joker,
         none
     }
-
 }
-

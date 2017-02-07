@@ -4,94 +4,77 @@ namespace ConsoleCards
 {
     public class Card
     {
-        public string Tag = "";
+        public string tag;// { get { return _tag; } }
+        //private string _tag;
 
+        public string uniqueId { get { return _uniqueId; } }
+        private string _uniqueId;
+
+        public Suit suit { get { return _suit; } }
         private Suit _suit;
+
+        public Value value { get { return _value; } }
         private Value _value;
-        private int _tier;
+
+        public string name { get { return _name; } }
         private string _name;
-        //private string _shortHand;
 
-        public int tier
-        {
-            get { return _tier; }
-        }
+        public int tier { get { return _tier; } }
+        private int _tier;
 
-        public string name
-        {
-            get { return _name; }
-        }
+        public string shorthand { get { return _shorthand; } }
+        private string _shorthand;
 
-        public string symbol
-        {
-            get { return _symbol; }
-        }
+        readonly private string[] ShorthandValue = new string[] { " 3", " 4", " 5", " 6", " 7", " 8", " 9", "10", " J", " Q", " K", " A", " 2", "Jo", " n" };
 
-        public Suit suit
-        {
-            get { return _suit; }
-        }
-
-        public Value value
-        {
-            get { return _value; }
-        }
-
-        public Card()
+        public Card(string nullReason)
         {
             //empty card object for storing temp cards and easy assignment
+            _uniqueId = DateTime.Now.Ticks.ToString();
             _suit = Suit.none;
             _value = Value.none;
             _name = "none";
+            tag = nullReason;
         }
 
-        public Card(Suit suit, Value value)
+        public Card(string newUniqueId, Suit newSuit, Value newValue)
         {
-            _suit = suit;
-            _value = value;
+            _uniqueId = newUniqueId;
+            _suit = newSuit;
+            _value = newValue;
+            _name = (int)newValue == 13 ? "Joker" : string.Format("{0} of {1}", value, suit);
+            _shorthand = ShorthandValue[(int)newValue] + GetSymbol();
 
-            if (value == Value.joker)
-            {
-                _name = "Joker";
-            }
-            else
-            {
-                _name = string.Format("{0} of {1}", value, suit);
-            }
-
-            
-            //give jokers different names, OR gives all cards unique id and use that to search rather than name
-            //will need to change at least at thte moment NPC - select/play
-
-            int tierCalc = ((int)value + 1) *10;
-            if (suit == Suit.clubs &&  value == Value.three)
+            int tierCalc = ((int)value + 1) * 10;
+            if (suit == Suit.Clubs && value == Value.Three)
             {
                 tierCalc--;
             }
             _tier = tierCalc;
         }
-        public char Symbol()
+
+
+        public char GetSymbol()
         {
             switch (_suit)
             {
-                case Suit.clubs:
+                case Suit.Clubs:
                     return '\u2663';//Clubs 
-                case Suit.spades:
+                case Suit.Spades:
                     return '\u2660';//Spades
-                case Suit.diamonds:
+                case Suit.Diamonds:
                     return '\u2666';//Diamonds
-                case Suit.hearts:
+                case Suit.Hearts:
                     return '\u2665';//Hearts
-                //case Suit.wild:
-                //    return '\u22C6';//Star (joker and none)
-                //    break;
-                //case Suit.none:
-                //    return '\u22C6';//Star (joker and none)
-                //    break;
+                case Suit.Wild:
+                    return '\u22C6';//Star (joker and none)
+                case Suit.none:
+                    return '\u22C6';//Star (joker and none)
                 default:
                     return '\u22C6'; //Star (joker and none)
             }
         }
+
         internal int GetTeir()
         {
             return tier;

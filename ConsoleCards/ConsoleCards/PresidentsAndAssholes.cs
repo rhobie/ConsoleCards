@@ -2,12 +2,12 @@
 {
     class PresidentsAndAssholes
     {
-        public static int NpcTotal { get => npcTotal; }
-        private static int npcTotal;
+        public static int npcTotal { get => _npcTotal; }
+        private static int _npcTotal;
 
-        public PresidentsAndAssholes(int rounds, int _npcTotal)
+        public PresidentsAndAssholes(int rounds, int npcTotal)
         {
-            npcTotal = _npcTotal;
+            _npcTotal = npcTotal;
 
             for (int i = 1; i <= rounds; i++)
             {

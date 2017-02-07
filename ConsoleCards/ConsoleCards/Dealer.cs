@@ -5,12 +5,12 @@ namespace ConsoleCards
 {
     class Dealer
     {
-        public int Position;
+        public int position;
         public Deck dealerDeck;
 
         public Dealer(int _position)
         {
-            Position = _position;
+            position = _position;
             //CreateDeck();
         }
 
@@ -29,7 +29,7 @@ namespace ConsoleCards
         {
             Console.WriteLine("\n DEALER IS DEALING..");
 
-            Game.PlayersHaveCards = true;
+            Game.playersHaveCards = true;
 
             for (int i = 0; i < numOfCards; i++)
             {

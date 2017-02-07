@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Card.cs" />
+    <Compile Include="CardPile.cs" />
     <Compile Include="Dealer.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="Deck.cs" />

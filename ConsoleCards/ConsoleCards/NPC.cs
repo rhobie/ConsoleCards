@@ -18,121 +18,48 @@ namespace ConsoleCards
 
         public void SortCards()
         {
-            Hand = Hand.OrderBy(x => x.Tier).ToList();
+            Hand = Hand.OrderBy(x => x.tier).ToList();
         }
 
         public Card SelectCardFromHand(Card TopDiscard, Card TopRoundCard)
         {
-            Card card;
-            //int index;
+            var cardRef = new Card("");
 
-            //turn this into delegate so that classes dont talk to eachother directly
-            //Card TopDiscard = DiscardPile.GetTopCard();
-            //Card TopRoundCard = RoundDiscardPile.GetTopCard();
-
-            if (TopDiscard == null && TopRoundCard == null)
+            if (TopDiscard == null && TopRoundCard == null) //if first card of the game
             {
-                if (Hand.Contains(Hand.Find(x => x.Tier == 9))) //three of clubs is the starting card
+                if (Hand.Contains(Hand.Find(x => x.tier == 9))) //three of clubs is the starting card
                 {
-                    //index = Hand.FindIndex(x => x.Tier == 9);
-                    card = Hand.Find(x => x.Tier == 9);
+                    cardRef = Hand.Find(x => x.tier == 9);
                 }
                 else
                 {
                     //NPC does not pass before the round has started.
-                    //index = -9;
-                    card = new Card();
-                    card.SpecialID = "PassBeforeRoundStart";
+                    cardRef.tag = "PassBeforeRoundStart";
                 }
             }
-            else if (TopRoundCard != null && Hand.Contains(Hand.Find(x => x.Tier > TopRoundCard.Tier)))
+            else if (TopRoundCard != null && Hand.Contains(Hand.Find(x => x.tier > TopRoundCard.tier)))
             {
-                //add next lot of decsion making here:
-                //index = Hand.FindIndex(x => x.Tier > TopRoundCard.Tier);
-                card = Hand.Find(x => x.Tier > TopRoundCard.Tier);
+                //need to cahnge this so that NPC does not just play the next highest card they have..
+                //add next lot of decsion making here:;
+                cardRef = Hand.Find(x => x.tier > TopRoundCard.tier);
             }
             else if (TopRoundCard == null)
             {
                 //play first card in hand
-                //index = 0;
-                card = Hand[0];
+                cardRef = Hand[0];
             }
             else
             {
-                //index = -1;
-                card = new Card();
-                card.SpecialID = "Pass";
-                
+                //card = new Card();
+                cardRef.tag = "Pass";
+                Pass();
             }
-
-            return card;
-        }
-
-        public Card TakeCardFromHand(Card _SelectedCard)
-        {
-            if (Hand.Count != 0)
-            {
-                //int index = SelectCardFromHand();
-
-                if (_SelectedCard.SpecialID == "PassBeforeRoundStart")
-                {
-                    //THESE CANT RETURN NULL, THEY HAVE TO RETURN BLANK CARDS
-                    //return null;
-                    //First round, no starting card in hand (SKIP)
-                }
-                else if (_SelectedCard.SpecialID == "Pass")
-                {
-                    //THESE CANT RETURN NULL, THEY HAVE TO RETURN BLANK CARDS
-                    Pass();
-                    //return null;
-                }
-                else
-                {
-                    //SELECT INPUT CARD REFERNCE IN HAND AND REMOVE AND RETURN
-                    //Hand.Find(x => x.Name == _SelectedCard.Name);
-                    Hand.Remove(Hand.Find(x => x.Name == _SelectedCard.Name));
-                    //var card = new Card();
-                    //card = Hand[_selectedCardIndex];
-                    //Hand.Find(x => x.;
-
-                    //return _SelectedCard;
-                }
-            }
-            //DONT RETURN NULL
-            return _SelectedCard;
-
-            //PREVIOUS VERSION:
-            //if (Hand.Count != 0)
-            //{
-            //    //int index = SelectCardFromHand();
-
-            //    if (_selectedCardIndex == -9)
-            //    {
-            //        return null;
-            //        //First round, no starting card in hand (SKIP)
-            //    }
-            //    else if (_selectedCardIndex == -1)
-            //    {
-            //        Pass();
-            //        return null;
-            //    }
-            //    else
-            //    {
-
-
-            //        var card = new Card();
-            //        card = Hand[_selectedCardIndex];
-            //        Hand.RemoveAt(_selectedCardIndex);
-
-            //        return card;
-            //    }
-            //}
-            //return null;
+            return cardRef;
         }
 
         public void Pass()
         {
-            Console.WriteLine("NPC {0} PASSES", Id);
+            Console.WriteLine("NPC {0} PASSES\n", Id);
             GameLists.PlayersInRound.Remove(this);
         }
 
