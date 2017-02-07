@@ -15,7 +15,8 @@
         king,
         ace,
         two,
-        joker
+        joker,
+        none
     }
 
 }

@@ -7,6 +7,7 @@
         diamonds,
         hearts,
         wild,
+        none,
     }
 
 }
