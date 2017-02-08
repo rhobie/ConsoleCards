@@ -10,7 +10,7 @@
         Eight,
         Nine,
         Ten,
-        jJack,
+        Jack,
         Queen,
         King,
         Ace,
