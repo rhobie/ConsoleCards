@@ -12,7 +12,7 @@ namespace ConsoleCards
         {
             Console.OutputEncoding = System.Text.Encoding.Unicode;
             //add select game if there is ever more than one..
-            var newGame = new PresidentsAndAssholes(1, 3);
+            var newGame = new PresidentsAndAssholes(1, 4);
 
             Console.ReadLine();
         }
@@ -103,7 +103,7 @@ namespace ConsoleCards
                                     Console.WriteLine("NPC {0} Plays {1} {2}", player.Id.ToString(), cardToPlay.name, cardToPlay.shorthand);
                                     if (player.Hand.Count == 0) //IF PLAYER HAS NO MORE CARDS
                                     {
-                                        //WIN GAME
+                                        //FINISHED HAND
                                         GameLists.PlayersInRound.Remove(player);//REMOVE PLAYER FROM ROUND
                                         GameLists.PlayerRanking.Add(player); //ADD PLAYER TO RANKING LIST
                                         Console.Write("**NPC {0} is out and is ranked number {1}**\n", player.Id, GameLists.PlayerRanking.Count);

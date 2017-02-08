@@ -31,23 +31,23 @@ namespace ConsoleCards
 
             Game.playersHaveCards = true;
 
-            for (int i = 0; i < numOfCards; i++)
+            while (dealerDeck.Cards.Count != 0)
             {
-                for (int playerId = 0; playerId < allPlayers.Count; playerId++)
+                foreach (var player in allPlayers)
                 {
-                    Card card = dealerDeck.Cards[0];
-                    dealerDeck.Cards.RemoveAt(0);
-                    allPlayers[playerId].Hand.Add(card);
+                    if (dealerDeck.Cards.Count != 0)
+                    {
+                        Card card = dealerDeck.Cards[0];
+                        dealerDeck.Cards.RemoveAt(0);
+                        player.Hand.Add(card);
+                    }
                 }
             }
             for (int i = 0; i < allPlayers.Count; i++)
             {
                 allPlayers[i].hasCards = true;
             }
-            
         }
-
     }
-
 }
 
