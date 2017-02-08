@@ -27,14 +27,14 @@ namespace ConsoleCards
 
         readonly private string[] ShorthandValue = new string[] { " 3", " 4", " 5", " 6", " 7", " 8", " 9", "10", " J", " Q", " K", " A", " 2", "Jo", " n" };
 
-        public Card(string nullReason)
+        public Card()
         {
             //empty card object for storing temp cards and easy assignment
             _uniqueId = DateTime.Now.Ticks.ToString();
             _suit = Suit.none;
             _value = Value.none;
             _name = "none";
-            tag = nullReason;
+            tag = "empty";
         }
 
         public Card(string newUniqueId, Suit newSuit, Value newValue)
@@ -44,13 +44,16 @@ namespace ConsoleCards
             _value = newValue;
             _name = (int)newValue == 13 ? "Joker" : string.Format("{0} of {1}", value, suit);
             _shorthand = ShorthandValue[(int)newValue] + GetSymbol();
+            _tier = ((int)value + 1) * 10;
 
-            int tierCalc = ((int)value + 1) * 10;
-            if (suit == Suit.Clubs && value == Value.Three)
+            if (newValue == Value.Three && newSuit == Suit.Clubs)
             {
-                tierCalc--;
+                tag = "StartingCard";
             }
-            _tier = tierCalc;
+            else
+            {
+                tag = "default";
+            }
         }
 
 

@@ -13,17 +13,15 @@ namespace ConsoleCards
 
         public Card GetTopCard()
         {
-            Card topCard;
             if (Cards.Count == 0)
             {
-                //return null card
-                topCard = new Card("");
-                return topCard;
+                //return no card
+                return new Card();
             }
             else
             {
-                topCard = Cards[Cards.Count - 1];
-                return topCard;
+                //return top card
+                return Cards[Cards.Count - 1]; ;
             }
         }
 

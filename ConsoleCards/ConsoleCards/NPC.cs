@@ -9,6 +9,7 @@ namespace ConsoleCards
         public int Id;
         public List<Card> Hand { get; set; }
         public bool hasCards = false;
+        //public bool pass = false;
 
         public NPC(int _activePlayers)
         {
@@ -23,44 +24,49 @@ namespace ConsoleCards
 
         public Card SelectCardFromHand(Card TopDiscard, Card TopRoundCard)
         {
-            var cardRef = new Card("");
+            var cardRef = new Card();
 
-            if (TopDiscard == null && TopRoundCard == null) //if first card of the game
+            //FIRST CARD OF GAME:
+            if (TopDiscard.name == "none" && TopRoundCard.name == "none") //if first card of the game
             {
-                if (Hand.Contains(Hand.Find(x => x.tier == 9))) //three of clubs is the starting card
+                if (Hand.Contains(Hand.Find(x => x.tag == "StartingCard"))) //three of clubs is the starting card
                 {
-                    cardRef = Hand.Find(x => x.tier == 9);
+                    cardRef = Hand.Find(x => x.tag == "StartingCard");
+                    return cardRef;
                 }
                 else
                 {
-                    //NPC does not pass before the round has started.
-                    cardRef.tag = "PassBeforeRoundStart";
+                    cardRef.tag = "NoStartingCard";
+                    return cardRef;
                 }
             }
-            else if (TopRoundCard != null && Hand.Contains(Hand.Find(x => x.tier > TopRoundCard.tier)))
+
+            //FIRST CARD OF ROUND:
+            if (TopRoundCard.tag == "empty")
+            {
+                //play first card in hand
+                cardRef = Hand[0];
+                return cardRef;
+            }
+
+            //CAN BEAT LAST CARD PLAYED:
+            if (Hand.Contains(Hand.Find(x => x.tier > TopRoundCard.tier)))
             {
                 //need to cahnge this so that NPC does not just play the next highest card they have..
                 //add next lot of decsion making here:;
                 cardRef = Hand.Find(x => x.tier > TopRoundCard.tier);
-            }
-            else if (TopRoundCard == null)
-            {
-                //play first card in hand
-                cardRef = Hand[0];
+                return cardRef;
             }
             else
             {
-                //card = new Card();
                 cardRef.tag = "Pass";
-                Pass();
+                return cardRef;
             }
-            return cardRef;
         }
 
         public void Pass()
         {
-            Console.WriteLine("NPC {0} PASSES\n", Id);
-            GameLists.PlayersInRound.Remove(this);
+
         }
 
         public void RevealHand()

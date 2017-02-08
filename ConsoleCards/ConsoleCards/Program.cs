@@ -27,8 +27,9 @@ namespace ConsoleCards
             //create NPCs
             for (int i = 0; i < PresidentsAndAssholes.npcTotal; i++)
             {
-                GameLists.SeatingPlan.Add(new NPC(i));
-                GameLists.PlayersInRound.Add(GameLists.SeatingPlan[i]);
+                GameLists.AllPlayers.Add(new NPC(i));
+                GameLists.SeatingPlan.Add(GameLists.AllPlayers[i]);
+                GameLists.PlayersInRound.Add(GameLists.AllPlayers[i]);
             }
 
             //Dealer shuffles deck
@@ -47,104 +48,115 @@ namespace ConsoleCards
 
             Console.WriteLine("\nGAME START");
 
-            StartGameLoop();
+            RunRounds();
 
             ShowAllHands();
 
             Console.WriteLine("\nGAME OVER");
         }
 
-        public void StartGameLoop()
+        public void RunRounds()
         {
-            var discardPileMain = new CardPile();
+            //var roundLoop = new Round();
             var roundDiscardPile = new CardPile();
+            var discardPile = new CardPile();
 
-            while (AllCardsRemaining() > 0) //WHILE PLAYERS HAVE CARDS
+            while (GameLists.PlayerRanking.Count < GameLists.AllPlayers.Count) //WHILE PLAYERS HAVEN'T FINISHED
             {
-                //START NEW ROUND
-                var roundLoop = new Round();
-
-                foreach (var player in GameLists.SeatingPlan) //FOR EVERY PLAYER
+                //start new round
+                foreach (var player in GameLists.PassedPlayers)
                 {
-                    if (GameLists.PlayersInRound.Count > 1) //IF MORE THAN ONE PLAYERS REMAIN IN ROUND
+                    GameLists.PlayersInRound.Add(player);
+                }
+                GameLists.PassedPlayers.Clear();
+
+                while (GameLists.PlayersInRound.Count > 1)//while more than 1 players remain in round
+                {
+                    foreach (var player in GameLists.SeatingPlan) //FOR EACH PLAYER (RESERVING SEATING ORDER)
                     {
-                        if (GameLists.PlayersInRound.Contains(player)) //IF PLAYER IS IN ROUND
+                        if (GameLists.PlayersInRound.Contains(player) && GameLists.PlayersInRound.Count > 1 && !GameLists.PassedPlayers.Contains(player))
                         {
-                            //SELECT A CARD
-                            Card cardToPlay = player.SelectCardFromHand(discardPileMain.GetTopCard(), roundDiscardPile.GetTopCard());
+                            Card cardToPlay = player.SelectCardFromHand(discardPile.GetTopCard(), roundDiscardPile.GetTopCard());
 
-                            if (cardToPlay.name != "none") //IF CARD IS NOT NULL OR SKIP
+                            switch (cardToPlay.tag)
                             {
-                                player.Hand.Remove(cardToPlay); //REMOVE CARD FROM HAND
-                                roundDiscardPile.Cards.Add(cardToPlay); //ADD CARD TO PLAYED CARDS PILE
+                                case "StartingCard":
+                                    player.Hand.Remove(cardToPlay); //REMOVE STARTING CARD FROM HAND
+                                    roundDiscardPile.Cards.Add(cardToPlay); //ADD CARD TO PLAYED CARDS PILE
+                                    Console.WriteLine("NPC {0} Plays {1} {2}", player.Id.ToString(), cardToPlay.name, cardToPlay.shorthand);
+                                    break;
 
-                                if (player.Hand.Count == 0) //IF PLAYER HAS NO MORE CARDS
-                                {
-                                    GameLists.PlayersInRound.Remove(player); //REMOVE PLAYER FROM ROUND
-                                    GameLists.PlayerRanking.Add(player); //ADD PLAYER TO RANKING LIST
-                                }
+                                case "NoStartingCard":
+                                    player.Hand.Remove(cardToPlay);
+                                    break;
 
-                                Console.WriteLine("NPC {0} Plays {1} {2}", player.Id.ToString(), cardToPlay.name, cardToPlay.shorthand);
-                                Console.ReadLine();
+                                case "Pass":
+                                    player.Hand.Remove(cardToPlay);
+                                    GameLists.PassedPlayers.Add(player);
+                                    GameLists.PlayersInRound.Remove(player);
+                                    Console.WriteLine("NPC {0} PASSES", player.Id);
+                                    break;
+
+                                case "default":
+                                    player.Hand.Remove(cardToPlay); //REMOVE CARD FROM HAND
+                                    roundDiscardPile.Cards.Add(cardToPlay); //ADD CARD TO PLAYED CARDS PILE
+                                    Console.WriteLine("NPC {0} Plays {1} {2}", player.Id.ToString(), cardToPlay.name, cardToPlay.shorthand);
+                                    if (player.Hand.Count == 0) //IF PLAYER HAS NO MORE CARDS
+                                    {
+                                        //WIN GAME
+                                        GameLists.PlayersInRound.Remove(player);//REMOVE PLAYER FROM ROUND
+                                        GameLists.PlayerRanking.Add(player); //ADD PLAYER TO RANKING LIST
+                                        Console.Write("**NPC {0} is out and is ranked number {1}**\n", player.Id, GameLists.PlayerRanking.Count);
+                                    }
+                                    break;
                             }
+                            Console.ReadLine();
                         }
                     }
                 }
-
-                if (GameLists.PlayersInRound.Count <= 1) //IF ONE PLAYER REMAINS, START NEW ROUND
+                if (GameLists.PlayerRanking.Count == GameLists.AllPlayers.Count -1) //THIS PLAYER IS ASSHOLE
                 {
-                    Console.WriteLine("\nNEW ROUND:");
-                    GameLists.SeatingPlan = PlayerWhoWonRoundStarts();
-
-                    roundLoop.ResetPlayersInRound(); //ERRORS HERE.....
-                    roundDiscardPile.MoveCardsToPile(discardPileMain);
+                    GameLists.PlayerRanking.Add(GameLists.PlayersInRound[0]);
+                    Console.Write("**NPC {0} lost and is now the Asshole**\n", GameLists.PlayersInRound[0].Id, GameLists.PlayerRanking.Count);
+                    break;
                 }
-            }
-        }
+                else
+                {
+                    //WON ROUND
+                    roundDiscardPile.MoveCardsToPile(discardPile);
+                    GameLists.SeatingPlan = ListItemToFrontOfListReservingOrder(GameLists.SeatingPlan, GameLists.PlayersInRound.Find(x => x.hasCards == true)); //PLAYER WHO WON ROUND STARTS
+                    Console.WriteLine("\nNEW ROUND:\n");
+                }
 
+            }
+            Console.WriteLine("GG");
+            Console.ReadLine();
+        }
 
         //REFACTOR FROM HERE DOWN:
 
-        public List<NPC> PlayerWhoWonRoundStarts()
+        public List<NPC> ListItemToFrontOfListReservingOrder(List<NPC> list, NPC NewFirstListItem)
         {
             var tempList = new List<NPC>();
-            tempList.Add(GameLists.PlayersInRound[0]);
-            for (int i = 0; i < GameLists.SeatingPlan.Count-1; i++)
+            tempList.Add(NewFirstListItem);
+            for (int i = 0; i < list.Count - 1; i++)
             {
-                tempList.Add(GameLists.SeatingPlan.Find(x => x.Id == GetNextId(tempList[tempList.Count - 1].Id)));
+                tempList.Add(list.Find(x => x.Id == GetNextId(tempList[tempList.Count - 1].Id, list.Count)));
             }
             return tempList;
         }
-
-        public int GetNextId(int currentId)
+        public int GetNextId(int currentId, int listCount)
         {
-            int next = currentId + 1;
-
-            if (next > PresidentsAndAssholes.npcTotal)
-            {
-                next = 1;
-            }
-
-            return next;
+            return (currentId + 1 > listCount) ? (1) : (currentId + 1);
         }
-        
+
+
         public void SortPlayerHands()
         {
             foreach (var player in GameLists.SeatingPlan)
             {
                 player.SortCards();
             }
-        }
-
-
-        public int AllCardsRemaining()
-        {
-            int count = 0;
-            foreach (var player in GameLists.SeatingPlan)
-            {
-                count += player.Hand.Count;
-            }
-            return count;
         }
 
         public void ShowAllHands()
