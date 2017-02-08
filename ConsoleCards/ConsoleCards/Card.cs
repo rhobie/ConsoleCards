@@ -25,6 +25,9 @@ namespace ConsoleCards
         public string shorthand { get { return _shorthand; } }
         private string _shorthand;
 
+        public int cardDupCount;// { get => cardDupCount; set => cardDupCount = value; }
+        //private int _cardDupCount;
+
         readonly private string[] ShorthandValue = new string[] { " 3", " 4", " 5", " 6", " 7", " 8", " 9", "10", " J", " Q", " K", " A", " 2", "Jo", " n" };
 
         public Card()
@@ -45,6 +48,7 @@ namespace ConsoleCards
             _name = (int)newValue == 13 ? "Joker" : string.Format("{0} of {1}", value, suit);
             _shorthand = ShorthandValue[(int)newValue] + GetSymbol();
             _tier = ((int)value + 1) * 10;
+            //_cardDupCount = 0;
 
             if (newValue == Value.Three && newSuit == Suit.Clubs)
             {
