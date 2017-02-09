@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ConsoleCards
 {
-    public class Debug
+    public class Commentary
     {
         public static void ShowCards(List<Card> Cards)
         {
@@ -17,7 +17,7 @@ namespace ConsoleCards
 
         public static void ShowCards(string who, List<Card> Cards)
         {
-            Console.WriteLine("\n {0} IS SHOWING ALL CARDS...",who);
+            Console.WriteLine("\n {0} IS SHOWING ALL CARDS...", who);
 
             int num = 0;
             foreach (var Card in Cards)
@@ -27,6 +27,5 @@ namespace ConsoleCards
             }
         }
     }
-
 }
 
