@@ -23,11 +23,11 @@ namespace ConsoleCards
         {
             Hand = Hand.OrderBy(x => x.tier).ToList();
         }
-        public void GroupCardsInHand()
+        public void GroupCardsInList(List<Card> list)
         {
-            foreach (var card in Hand)
+            foreach (var card in list)
             {
-                card.cardDupCount = Hand.FindAll(x => x.value == card.value).Count;
+                card.cardDupCount = list.FindAll(x => x.value == card.value).Count;
             }
         }
 
@@ -40,18 +40,7 @@ namespace ConsoleCards
             {
                 if (Hand.Contains(Hand.Find(x => x.tag == "StartingCard"))) //three of clubs is the starting card
                 {
-
                     cardRef = Hand.FindAll(x => x.value == Hand[0].value);
-                    //Hand.Find(x => x.tag == "StartingCard")
-
-
-
-                    //cardRef.Add(new Card());
-                    //cardRef[0] = Hand.Find(x => x.tag == "StartingCard");
-                    //if (Hand.Contains(Hand.FindAll(x => x.value == cardRef[0].value)))
-                    //{
-
-                    //}
                     return cardRef;
                 }
                 else
@@ -71,45 +60,22 @@ namespace ConsoleCards
                 cardRef[0].cardDupCount = cardRef.Count;
                 return cardRef;
             }
-            //create two new methods, one that counts the duplicates in each players hand and tags them appropriatly on card creation - call everytime a card is played.
-            // AND one that is called after every card is played but only for the card that was played.
-
-            //  (Hand.Contains(Hand.Find(x => x.tier > TopRoundCard.tier && () <= TopRoundCard.cardsPlayed)))
-            //                                                    x.cardsPlayed
-            //CAN BEAT LAST CARD PLAYED:                                !! \/ HERE cardsPlayed is not set before calling this, need a way of counting avaible cards
-            if (Hand.Contains(Hand.Find(x => x.tier > TopRoundCard.tier && x.cardDupCount <= TopRoundCard.cardDupCount)))
+            //CAN BEAT CARD:
+            if (Hand.Contains(Hand.Find(x => x.tier > TopRoundCard.tier && x.cardDupCount >= TopRoundCard.cardDupCount)))
             {
                 int cardsToMatch = TopRoundCard.cardDupCount;
-                //cardRef.Add(new Card());
+                cardRef.Add(Hand.Find(x => x.tier > TopRoundCard.tier && x.cardDupCount >= TopRoundCard.cardDupCount));
 
-                cardRef.AddRange(Hand.FindAll(x => x.tier > TopRoundCard.tier && x.cardDupCount <= (TopRoundCard.cardDupCount)));
-
-                //int extraCards = cardRef.Count - cardsToMatch;
-                //cardRef.RemoveRange(0, extraCards);
-
-
-
-                //for (int i = 0; i < cardsToMatch; i++)
-                //{
-                //    cardRef[i] = Hand.FindAll(x => x.tier > TopRoundCard.tier && x.cardDupCount <= (TopRoundCard.cardDupCount))[i-1];
-                //    Hand.Remove(cardRef[i]);
-                //    cardRef[i].cardDupCount = TopRoundCard.cardDupCount;
-                //}
-                //Hand.InsertRange(0, cardRef);
-
-
+                for (int i = 0; i < cardsToMatch - 1; i++)
+                {
+                    cardRef.Add(Hand.Find(x => x.value == cardRef[0].value && x.suit != cardRef[0].suit));
+                }
+                GroupCardsInList(cardRef);
                 return cardRef;
 
             }
-            //    Hand.FindAll()
-            //{
-            //        TopRoundCard.cardsPlayed
-            //    //need to cahnge this so that NPC does not just play the next highest card they have..
-            //    //add next lot of decsion making here:;
-            //        cardRef.Add(Hand.Find(x => x.tier > TopRoundCard.tier));
-            //        return cardRef;
-            //    }
-            //}
+
+            //need to add to this so that NPC can make decisions rather than playing the lowest possible card(s) each hand
 
             else
             {
