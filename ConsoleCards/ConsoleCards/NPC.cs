@@ -25,9 +25,12 @@ namespace ConsoleCards
         }
         public void GroupCardsInList(List<Card> list)
         {
-            foreach (var card in list)
+            if (Hand.Count != 0)
             {
-                card.cardDupCount = list.FindAll(x => x.value == card.value).Count;
+                foreach (var card in list)
+                {
+                    card.cardDupCount = list.FindAll(x => x.value == card.value).Count;
+                }
             }
         }
 

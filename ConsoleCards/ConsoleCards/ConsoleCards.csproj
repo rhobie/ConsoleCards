@@ -47,7 +47,6 @@
     <Compile Include="Dealer.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="Deck.cs" />
-    <Compile Include="GameLists.cs" />
     <Compile Include="NPC.cs" />
     <Compile Include="PresidentsAndAssholes.cs" />
     <Compile Include="Program.cs" />
