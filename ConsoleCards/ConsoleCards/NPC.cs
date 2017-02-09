@@ -8,15 +8,12 @@ namespace ConsoleCards
     {
         public int Id;
         public List<Card> Hand { get; set; }
-        //public List<Card> Duplicates { get; set; } //change name to card selection later?
         public bool hasCards = false;
-        //public bool pass = false;
 
         public NPC(int _activePlayers)
         {
             Id = _activePlayers + 1;
             Hand = new List<Card>();
-            //Duplicates = new List<Card>();
         }
 
         public void SortCards()
@@ -29,7 +26,10 @@ namespace ConsoleCards
             {
                 foreach (var card in list)
                 {
-                    card.cardDupCount = list.FindAll(x => x.value == card.value).Count;
+                    if (card != null)
+                    {
+                        card.cardDupCount = list.FindAll(x => x.value == card.value).Count;
+                    }
                 }
             }
         }
@@ -95,7 +95,7 @@ namespace ConsoleCards
 
         public void RevealHand()
         {
-            Debug.ShowCards("NPC " + Id.ToString(), Hand);
+            Commentary.ShowCards("NPC " + Id.ToString(), Hand);
         }
     }
 

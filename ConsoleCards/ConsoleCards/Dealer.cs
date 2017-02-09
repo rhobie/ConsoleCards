@@ -11,7 +11,6 @@ namespace ConsoleCards
         public Dealer(int _position)
         {
             position = _position;
-            //CreateDeck();
         }
 
         public void CreateDeck()
@@ -28,8 +27,6 @@ namespace ConsoleCards
         public void Deal(List<NPC> allPlayers, int numOfCards)
         {
             Console.WriteLine("\n DEALER IS DEALING..");
-
-            Game.playersHaveCards = true;
 
             while (dealerDeck.Cards.Count != 0)
             {

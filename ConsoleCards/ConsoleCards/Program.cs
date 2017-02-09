@@ -14,7 +14,7 @@ namespace ConsoleCards
 
             //add select game if there is ever more than one..
 
-            var newGame = new PresidentsAndAssholes(5, 4);
+            var newGame = new PresidentsAndAssholes(3, 10);
 
             Console.ReadLine();
         }
@@ -22,24 +22,29 @@ namespace ConsoleCards
 
     public class Game
     {
-        public static bool playersHaveCards = false;
-
         public static List<NPC> PlayersInRound = new List<NPC>();
         public static List<NPC> SeatingPlan = new List<NPC>();
-        public static List<NPC> InactivePlayers = new List<NPC>();
         public static List<NPC> PassedPlayers = new List<NPC>();
 
         public Game()
         {
-            //create NPCs
+            //add NPCs to table
             for (int i = 0; i < PresidentsAndAssholes.npcTotal; i++)
             {
-                //Program.AllPlayers
-                PresidentsAndAssholes.AllPlayers.Add(new NPC(i));
                 SeatingPlan.Add(PresidentsAndAssholes.AllPlayers[i]);
                 PlayersInRound.Add(PresidentsAndAssholes.AllPlayers[i]);
             }
 
+            Console.WriteLine("\nGAME START");
+
+            NewSetup();
+            StartRounds();
+
+            Console.WriteLine("\nGAME OVER");
+        }
+
+        public void NewSetup()
+        {
             //Dealer shuffles deck
             var dealer = new Dealer(0);
             dealer.CreateDeck();
@@ -55,22 +60,10 @@ namespace ConsoleCards
                 player.SortCards();
                 player.GroupCardsInList(player.Hand);
             }
-
-
-            ShowAllHands();
-
-            Console.WriteLine("\nGAME START");
-
-            RunRounds();
-
-            ShowAllHands();
-
-            Console.WriteLine("\nGAME OVER");
         }
 
-        public void RunRounds()
+        public void StartRounds()
         {
-            //var roundLoop = new Round();
             var roundDiscardPile = new CardPile();
             var discardPile = new CardPile();
 
@@ -99,7 +92,20 @@ namespace ConsoleCards
                                 case "StartingCard":
                                     player.Hand.RemoveAll(x => x.tier == cardToPlay[0].tier); //REMOVE STARTING CARD FROM HAND
                                     roundDiscardPile.Cards.AddRange(cardToPlay); //ADD CARD TO PLAYED CARDS PILE
-                                    Console.WriteLine("NPC {0} Plays {1} {2} {3}", player.Id.ToString(), cardToPlay[0].cardDupCount, cardToPlay[0].name, cardToPlay[0].shorthand);
+
+                                    //refactor all concole.writelines out to commentary class
+                                    if (roundDiscardPile.GetTopCard().cardDupCount == 1)
+                                    {
+                                        Console.WriteLine("NPC {0} Plays the starting card ({1})", player.Id.ToString(), cardToPlay[0].name);
+                                    }
+                                    else if (roundDiscardPile.GetTopCard().cardDupCount == 2)
+                                    {
+                                        Console.WriteLine("NPC {0} Plays a {1} and {2} other {3}", player.Id.ToString(), cardToPlay[0].name, cardToPlay[0].cardDupCount - 1, cardToPlay[0].value);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("NPC {0} Plays a {1} and {2} other {3}s", player.Id.ToString(), cardToPlay[0].name, cardToPlay[0].cardDupCount - 1, cardToPlay[0].value);
+                                    }
                                     break;
 
                                 case "NoStartingCard":
@@ -121,9 +127,16 @@ namespace ConsoleCards
                                     //player.Hand.RemoveAll(x => x.tier == cardToPlay[0].tier); //REMOVE CARD FROM HAND
                                     roundDiscardPile.Cards.AddRange(cardToPlay); //ADD CARD TO PLAYED CARDS PILE
                                     player.GroupCardsInList(player.Hand);
-                                    Console.WriteLine("NPC {0} Plays {1} {2} {3}", 
-                                        player.Id.ToString(), cardToPlay[0].cardDupCount, cardToPlay[0].name, cardToPlay[0].shorthand);
-
+                                    if (roundDiscardPile.GetTopCard().cardDupCount == 1)
+                                    {
+                                        Console.WriteLine("NPC {0} Plays {1} {2}",
+                                            player.Id.ToString(), cardToPlay[0].cardDupCount, cardToPlay[0].name);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("NPC {0} Plays {1} {2}",
+                                            player.Id.ToString(), cardToPlay[0].cardDupCount, cardToPlay[0].value +"s");
+                                    }
                                     if (player.Hand.Count == 0) //IF PLAYER HAS NO MORE CARDS
                                     {
                                         //FINISHED HAND
@@ -133,7 +146,7 @@ namespace ConsoleCards
                                     }
                                     break;
                             }
-                            //Console.ReadLine();
+                            //Console.ReadLine(); //turn on to step through each turn
                         }
                     }
                 }
@@ -141,6 +154,7 @@ namespace ConsoleCards
                 {
                     PresidentsAndAssholes.PlayerRanking.Add(PlayersInRound[0]);
                     Console.Write("**NPC {0} lost and is now the Asshole**\n", PlayersInRound[0].Id, PresidentsAndAssholes.PlayerRanking.Count);
+                    Commentary.ShowCards("NPC " + PlayersInRound[0].Id.ToString(), PlayersInRound[0].Hand);
                     break;
                 }
                 else
@@ -152,10 +166,7 @@ namespace ConsoleCards
 
                     Console.WriteLine("\nNEW ROUND:\n");
                 }
-
             }
-            Console.WriteLine("remove this when implementing rounds");
-            Console.ReadLine();
         }
 
         //REFACTOR FROM HERE DOWN:
@@ -174,15 +185,6 @@ namespace ConsoleCards
         {
             return (currentId + 1 > listCount) ? (1) : (currentId + 1);
         }
-
-
-        //public void SortPlayerHands()
-        //{
-        //    foreach (var player in GameLists.SeatingPlan)
-        //    {
-        //        player.SortCards();
-        //    }
-        //}
 
         public void ShowAllHands()
         {
