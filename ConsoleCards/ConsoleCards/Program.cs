@@ -13,8 +13,11 @@ namespace ConsoleCards
             Console.OutputEncoding = System.Text.Encoding.Unicode;
 
             //add select game if there is ever more than one..
-
-            var newGame = new PresidentsAndAssholes(3, 10);
+            while (true)
+            {
+                var newGame = new PresidentsAndAssholes(3, 30);
+            }
+            
 
             Console.ReadLine();
         }
@@ -35,12 +38,12 @@ namespace ConsoleCards
                 PlayersInRound.Add(PresidentsAndAssholes.AllPlayers[i]);
             }
 
-            Console.WriteLine("\nGAME START");
+            Commentary.GameStart();
 
             NewSetup();
             StartRounds();
 
-            Console.WriteLine("\nGAME OVER");
+            Commentary.GameOver();
         }
 
         public void NewSetup()
@@ -51,14 +54,14 @@ namespace ConsoleCards
             dealer.ShuffleDeck();
 
             //Dealer Deals all cards to players
-            int cardsPerPlayer = dealer.dealerDeck.Cards.Count / PresidentsAndAssholes.npcTotal;
+            int cardsPerPlayer = dealer.DealerDeck.Cards.Count / PresidentsAndAssholes.npcTotal;
             dealer.Deal(SeatingPlan, cardsPerPlayer);
 
             //Players Sort their hands
             foreach (var player in PresidentsAndAssholes.AllPlayers)
             {
                 player.SortCards();
-                player.GroupCardsInList(player.Hand);
+                player.GroupCards(player.Hand);
             }
         }
 
@@ -87,25 +90,12 @@ namespace ConsoleCards
                             var cardToPlay = new List<Card>();
                             cardToPlay.AddRange(player.SelectCardFromHand(discardPile.GetTopCard(), roundDiscardPile.GetTopCard()));
 
-                           switch (cardToPlay[0].tag)
+                           switch (cardToPlay[0].Tag)
                             {
                                 case "StartingCard":
-                                    player.Hand.RemoveAll(x => x.tier == cardToPlay[0].tier); //REMOVE STARTING CARD FROM HAND
+                                    player.Hand.RemoveAll(x => x.Tier == cardToPlay[0].Tier); //REMOVE STARTING CARD FROM HAND
                                     roundDiscardPile.Cards.AddRange(cardToPlay); //ADD CARD TO PLAYED CARDS PILE
-
-                                    //refactor all concole.writelines out to commentary class
-                                    if (roundDiscardPile.GetTopCard().cardDupCount == 1)
-                                    {
-                                        Console.WriteLine("NPC {0} Plays the starting card ({1})", player.Id.ToString(), cardToPlay[0].name);
-                                    }
-                                    else if (roundDiscardPile.GetTopCard().cardDupCount == 2)
-                                    {
-                                        Console.WriteLine("NPC {0} Plays a {1} and {2} other {3}", player.Id.ToString(), cardToPlay[0].name, cardToPlay[0].cardDupCount - 1, cardToPlay[0].value);
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("NPC {0} Plays a {1} and {2} other {3}s", player.Id.ToString(), cardToPlay[0].name, cardToPlay[0].cardDupCount - 1, cardToPlay[0].value);
-                                    }
+                                    Commentary.StartingCard(roundDiscardPile, player, cardToPlay);
                                     break;
 
                                 case "NoStartingCard":
@@ -116,7 +106,7 @@ namespace ConsoleCards
                                     player.Hand.Remove(cardToPlay[0]);
                                     PassedPlayers.Add(player);
                                     PlayersInRound.Remove(player);
-                                    Console.WriteLine("NPC {0} PASSES", player.Id);
+                                    Commentary.Pass(player);
                                     break;
 
                                 case "default":
@@ -126,23 +116,14 @@ namespace ConsoleCards
                                     }
                                     //player.Hand.RemoveAll(x => x.tier == cardToPlay[0].tier); //REMOVE CARD FROM HAND
                                     roundDiscardPile.Cards.AddRange(cardToPlay); //ADD CARD TO PLAYED CARDS PILE
-                                    player.GroupCardsInList(player.Hand);
-                                    if (roundDiscardPile.GetTopCard().cardDupCount == 1)
-                                    {
-                                        Console.WriteLine("NPC {0} Plays {1} {2}",
-                                            player.Id.ToString(), cardToPlay[0].cardDupCount, cardToPlay[0].name);
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("NPC {0} Plays {1} {2}",
-                                            player.Id.ToString(), cardToPlay[0].cardDupCount, cardToPlay[0].value +"s");
-                                    }
+                                    player.GroupCards(player.Hand);
+                                    Commentary.Play(roundDiscardPile, cardToPlay, player);
                                     if (player.Hand.Count == 0) //IF PLAYER HAS NO MORE CARDS
                                     {
                                         //FINISHED HAND
                                         PlayersInRound.Remove(player);//REMOVE PLAYER FROM ROUND
                                         PresidentsAndAssholes.PlayerRanking.Add(player); //ADD PLAYER TO RANKING LIST
-                                        Console.Write("**NPC {0} is out and is ranked number {1}**\n", player.Id, PresidentsAndAssholes.PlayerRanking.Count);
+                                        Commentary.PlayerRanked(player);
                                     }
                                     break;
                             }
@@ -150,11 +131,11 @@ namespace ConsoleCards
                         }
                     }
                 }
-                if (PresidentsAndAssholes.PlayerRanking.Count == PresidentsAndAssholes.AllPlayers.Count -1) //THIS PLAYER IS ASSHOLE
+                if (PresidentsAndAssholes.PlayerRanking.Count == PresidentsAndAssholes.AllPlayers.Count -1) //THIS PLAYER IS ASSHOLE //change to if playersnround == 1
                 {
                     PresidentsAndAssholes.PlayerRanking.Add(PlayersInRound[0]);
-                    Console.Write("**NPC {0} lost and is now the Asshole**\n", PlayersInRound[0].Id, PresidentsAndAssholes.PlayerRanking.Count);
-                    Commentary.ShowCards("NPC " + PlayersInRound[0].Id.ToString(), PlayersInRound[0].Hand);
+                    Commentary.PlayerRanked(PlayersInRound[0]);
+                    Commentary.ShowCards(PlayersInRound[0].Id.ToString(), PlayersInRound[0].Hand);
                     break;
                 }
                 else
@@ -163,14 +144,11 @@ namespace ConsoleCards
                     roundDiscardPile.MoveCardsToPile(discardPile);
                     SeatingPlan = ListItemToFrontOfListReservingOrder(
                         SeatingPlan, PlayersInRound.Find(x => x.hasCards == true)); //PLAYER WHO WON ROUND STARTS
-
-                    Console.WriteLine("\nNEW ROUND:\n");
+                    Commentary.NewRound();
+                    
                 }
             }
         }
-
-        //REFACTOR FROM HERE DOWN:
-
         public List<NPC> ListItemToFrontOfListReservingOrder(List<NPC> list, NPC NewFirstListItem)
         {
             var tempList = new List<NPC>();

@@ -7,15 +7,14 @@ namespace ConsoleCards
     {
         public static class DeckRules
         {
-            public const int cardCount = 54;
-            public const int suitCount = 3; // (zero based)
-            public const int valueCount = 12; // (zero based) //including jokers 13
-            public const int jokerCount = 2;
+            public const int CardCount = 54;
+            public const int SuitCount = 3; // (zero based)
+            public const int ValueCount = 12; // (zero based) //including jokers 13
+            public const int JokerCount = 2;
         }
 
         private List<Card> _cards = new List<Card>();
         internal List<Card> Cards { get => _cards; set => _cards = value; }
-
 
         public Deck()
         {
@@ -24,16 +23,16 @@ namespace ConsoleCards
 
         public List<Card> GenerateDeck()
         {
-            Console.WriteLine("\nGENERATING DECK...");
+            Commentary.GeneratingDeck();
 
             var Cards = new List<Card>();
 
             int suitPosition = 0;
             int valuePosition = 0;
             int id = 0;
-            while (suitPosition <= DeckRules.suitCount)
+            while (suitPosition <= DeckRules.SuitCount)
             {
-                while (valuePosition <= DeckRules.valueCount)
+                while (valuePosition <= DeckRules.ValueCount)
                 {
                     Cards.Add(new Card(id.ToString(), (Suit)suitPosition, (Value)valuePosition));
                     valuePosition++;
@@ -45,18 +44,16 @@ namespace ConsoleCards
             }
 
             //add jokers:
-            for (int i = 0; i < DeckRules.jokerCount; i++)
+            for (int i = 0; i < DeckRules.JokerCount; i++)
             {
                 id++;
                 Cards.Add(new Card(id.ToString(), Suit.Wild, Value.Joker));
             }
 
-            Console.WriteLine("\nDECK GENERATED.");
-
             return Cards;
         }
 
-        public void Shuffle()
+        public void Shuffle() //deck can shuffle itself.. why even have a dealer? I should refactor dealer to here at some point
         {
             Cards.Shuffle();
         }

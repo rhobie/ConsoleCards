@@ -5,37 +5,37 @@ namespace ConsoleCards
 {
     class Dealer
     {
-        public int position;
-        public Deck dealerDeck;
+        public int Position;
+        public Deck DealerDeck;
 
         public Dealer(int _position)
         {
-            position = _position;
+            Position = _position;
         }
 
         public void CreateDeck()
         {
-            dealerDeck = new Deck();
+            DealerDeck = new Deck();
         }
         
         public void ShuffleDeck()
         {
-            Console.WriteLine("\nSHUFFLING..");
-            dealerDeck.Shuffle();
+            Commentary.Shuffling();
+            DealerDeck.Shuffle();
         }
         
         public void Deal(List<NPC> allPlayers, int numOfCards)
         {
-            Console.WriteLine("\n DEALER IS DEALING..");
+            Commentary.DealerDealing();
 
-            while (dealerDeck.Cards.Count != 0)
+            while (DealerDeck.Cards.Count != 0)
             {
                 foreach (var player in allPlayers)
                 {
-                    if (dealerDeck.Cards.Count != 0)
+                    if (DealerDeck.Cards.Count != 0)
                     {
-                        Card card = dealerDeck.Cards[0];
-                        dealerDeck.Cards.RemoveAt(0);
+                        Card card = DealerDeck.Cards[0];
+                        DealerDeck.Cards.RemoveAt(0);
                         player.Hand.Add(card);
                     }
                 }

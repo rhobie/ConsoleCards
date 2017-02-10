@@ -25,11 +25,11 @@ namespace ConsoleCards
             }
         }
 
-        public void MoveCardsToPile(CardPile newPile)
+        public void MoveCardsToPile(CardPile otherPile)
         {
             foreach (var card in Cards)
             {
-                newPile.Cards.Add(card);
+                otherPile.Cards.Add(card);
             }
             Cards.Clear();
         }
