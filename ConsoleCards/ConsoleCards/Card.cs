@@ -4,25 +4,25 @@ namespace ConsoleCards
 {
     public class Card
     {
-        public string tag;// { get { return _tag; } }
+        public string Tag;// { get { return _tag; } }
         //private string _tag;
 
-        public string uniqueId { get { return _uniqueId; } }
+        public string UniqueId { get { return _uniqueId; } }
         private string _uniqueId;
 
-        public Suit suit { get { return _suit; } }
+        public Suit Suit { get { return _suit; } }
         private Suit _suit;
 
-        public Value value { get { return _value; } }
+        public Value Value { get { return _value; } }
         private Value _value;
 
-        public string name { get { return _name; } }
+        public string Name { get { return _name; } }
         private string _name;
 
-        public int tier { get { return _tier; } }
+        public int Tier { get { return _tier; } }
         private int _tier;
 
-        public string shorthand { get { return _shorthand; } }
+        public string Shorthand { get { return _shorthand; } }
         private string _shorthand;
 
         public int cardDupCount;// { get => cardDupCount; set => cardDupCount = value; }
@@ -37,26 +37,26 @@ namespace ConsoleCards
             _suit = Suit.none;
             _value = Value.none;
             _name = "none";
-            tag = "empty";
+            Tag = "empty";
         }
 
-        public Card(string newUniqueId, Suit newSuit, Value newValue)
+        public Card(string uniqueId, Suit suit, Value value)
         {
-            _uniqueId = newUniqueId;
-            _suit = newSuit;
-            _value = newValue;
-            _name = (int)newValue == 13 ? "Joker" : string.Format("{0} of {1}", value, suit);
-            _shorthand = ShorthandValue[(int)newValue] + GetSymbol();
-            _tier = ((int)value + 1) * 10;
+            _uniqueId = uniqueId;
+            _suit = suit;
+            _value = value;
+            _name = (int)value == 13 ? "Joker" : string.Format("{0} of {1}", Value, Suit);
+            _shorthand = ShorthandValue[(int)value] + GetSymbol();
+            _tier = ((int)Value + 1) * 10;
             //_cardDupCount = 0;
 
-            if (newValue == Value.Three && newSuit == Suit.Clubs)
+            if (value == Value.Three && suit == Suit.Clubs)
             {
-                tag = "StartingCard";
+                Tag = "StartingCard";
             }
             else
             {
-                tag = "default";
+                Tag = "default";
             }
         }
 
@@ -84,7 +84,7 @@ namespace ConsoleCards
 
         internal int GetTeir()
         {
-            return tier;
+            return Tier;
         }
     }
 
