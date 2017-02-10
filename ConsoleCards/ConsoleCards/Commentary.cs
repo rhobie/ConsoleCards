@@ -64,12 +64,12 @@ namespace ConsoleCards
         {
             if (Game.PlayersInRound.Count == 0)
             {
-                Console.WriteLine("\n **NPC {0} lost and is now the Asshole**", player.Id, PresidentsAndAssholes.PlayerRanking.Count);
+                Console.WriteLine("\n **NPC {0} lost and is now the Asshole**", player.Id, Ranking.PlayerRanking.Count);
             }
             else
             {
                 string rankingName;
-                switch (PresidentsAndAssholes.PlayerRanking.Count)
+                switch (Ranking.PlayerRanking.Count)
                 {
                     case 1:
                         rankingName = "President";
@@ -95,6 +95,21 @@ namespace ConsoleCards
             }
         }
 
+        public static void SwapCards(NPC president, Card low1, Card low2, NPC Asshole, Card high1, Card high2)
+        {
+            Console.WriteLine("\nThe president ({0}) gave the asshole ({1}) {2} and {3} in exchange for {4} and {5}",
+                president.Id.ToString(), Asshole.Id.ToString(), low1.Shorthand, low2.Shorthand, high1.Shorthand, high2.Shorthand);
+        }
+        public static void SwapCards(NPC vicePresident, Card low, NPC viceAsshole, Card high)
+        {
+            Console.WriteLine("The vice-president ({0}) gave the vice-asshole ({1}) {2} in exchange for {3}\n",
+                vicePresident.Id.ToString(), viceAsshole.Id.ToString(), low.Shorthand,  high.Shorthand);
+        }
+
+        public static void ScoreBoard()
+        {
+
+        }
     }
 }
 

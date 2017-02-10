@@ -8,11 +8,12 @@ namespace ConsoleCards
         private static int _npcTotal;
 
         public static List<NPC> AllPlayers = new List<NPC>();
-        public static List<NPC> PlayerRanking = new List<NPC>();
 
-        public PresidentsAndAssholes(int newRounds, int newNpcTotal)
+
+        public PresidentsAndAssholes(int rounds, int newNpcTotal)
         {
             _npcTotal = newNpcTotal;
+            //var ranking = new Ranking();
 
             //Add Players
             for (int i = 0; i < newNpcTotal; i++)
@@ -20,7 +21,7 @@ namespace ConsoleCards
                 AllPlayers.Add(new NPC(i));
             }
             //Play Rounds
-            for (int i = 1; i <= newRounds; i++)
+            for (int i = 1; i <= rounds; i++)
             {
                 var game = new Game();
             }

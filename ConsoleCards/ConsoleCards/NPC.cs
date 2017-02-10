@@ -22,17 +22,27 @@ namespace ConsoleCards
         }
         public void GroupCards(List<Card> hand)
         {
-            if (hand.Count != 0)
+            try
             {
-                foreach (var card in hand)
+                if (hand.Count != 0)
                 {
-                    if (card != null)
+                    foreach (var card in hand)
                     {
-                        card.cardDupCount = hand.FindAll(x => x.Value == card.Value).Count;
+                        if (card.Tag != "empty")
+                        {
+                            card.cardDupCount = hand.FindAll(x => x.Value == card.Value).Count;
+                        }
                     }
                 }
+
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
         }
+
 
         public List<Card> SelectCardFromHand(Card TopDiscard, Card TopRoundCard)
         {
@@ -44,14 +54,13 @@ namespace ConsoleCards
                 if (Hand.Contains(Hand.Find(x => x.Tag == "StartingCard"))) //three of clubs is the starting card
                 {
                     cardRef = Hand.FindAll(x => x.Value == Hand[0].Value);
-                    return cardRef;
                 }
                 else
                 {
                     cardRef.Add(new Card());
                     cardRef[0].Tag = "NoStartingCard";
-                    return cardRef;
                 }
+                return cardRef;
             }
 
             //FIRST CARD OF ROUND:
