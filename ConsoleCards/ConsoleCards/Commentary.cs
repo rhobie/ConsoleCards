@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ConsoleCards
 {
@@ -17,13 +18,28 @@ namespace ConsoleCards
             Console.WriteLine("\n NPC {0} IS REVEALING REMAINING CARDS...", who);
 
             int num = 0;
-            foreach (var Card in Cards)
+            foreach (var card in Cards)
             {
                 num++;
-                Console.WriteLine(" #{0,2} T:{1,3} {2} {3}", num, Card.Tier, Card.Shorthand, Card.Name);
+                Console.WriteLine(" #{0,2} T:{1,3} {2} {3}", num, card.Tier, card.Shorthand, card.Name);
             }
         }
 
+
+        public static void ShowCards(List<NPC> playerList)
+        {
+            foreach (var player in playerList)
+            {
+                Console.WriteLine("\n NPC {0} IS REVEALING REMAINING CARDS...", player.Id);
+
+                int num = 0;
+                foreach (var card in player.Hand)
+                {
+                    num++;
+                    Console.WriteLine(" #{0,2} T:{1,3} {2} {3}", num, card.Tier, card.Shorthand, card.Name);
+                }
+            }
+        }
 
         public static void StartingCard(CardPile roundDiscardPile, NPC player, List<Card> cardToPlay)
         {
@@ -48,7 +64,7 @@ namespace ConsoleCards
 
         public static void Play(CardPile roundDiscardPile, List<Card> cardToPlay, NPC player)
         {
-            if (roundDiscardPile.GetTopCard().cardDupCount == 1)
+            if (roundDiscardPile.GetTopCard().cardDupCount == 1 || roundDiscardPile.GetTopCard() == null)
             {
                 Console.WriteLine("  NPC {0} Plays {1} {2}",
                     player.Id.ToString(), cardToPlay[0].cardDupCount, cardToPlay[0].Name);
@@ -60,7 +76,7 @@ namespace ConsoleCards
             }
         }
 
-        public static void PlayerRanked(NPC player)
+        public static void PlayerRanked(NPC player, List<NPC> playersInRound)
         {//THIS ISNT WORKING RIGHT
             string rankingName;
 
@@ -72,14 +88,15 @@ namespace ConsoleCards
             {
                 rankingName = "Vice President";
             }
+
+            else if (player ==  playersInRound[0])
+            {
+                rankingName = "Asshole"; //fix this
+            }
             else if (Ranking.PlayerRanking.IndexOf(player) == Ranking.PlayerRanking.Count - 1)
             {
                 rankingName = "Vice Asshole";
             }
-            //else if (Ranking.PlayerRanking.IndexOf(player) == Ranking.PlayerRanking.Count - 1)
-            //{
-            //    rankingName = "Asshole"; //fix this
-            //}
             else
             {
                 rankingName = "Neutral";
@@ -102,7 +119,15 @@ namespace ConsoleCards
 
         public static void ScoreBoard()
         {
+            var sb = new StringBuilder();
+            foreach (var player in PresidentsAndAssholes.AllPlayers)
+            {
+                int pnaScore = 0 + player.Score[0] - player.Score[3];
+                sb.Append(String.Format("\nNPC {0} Score: P:{1,2} | VP:{2,2} | VA:{3,2} | A:{4,2}   P&A: {5}",
+                    player.Id, player.Score[0], player.Score[1],player.Score[2], player.Score[3],pnaScore));
 
+            }
+            Console.WriteLine(sb);
         }
     }
 }
