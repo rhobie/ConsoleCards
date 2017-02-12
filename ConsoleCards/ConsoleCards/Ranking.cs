@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace ConsoleCards
 {
@@ -27,47 +28,8 @@ namespace ConsoleCards
                 GetAsshole().Hand.AddRange(lowCards);
                 GetPresident().Hand.AddRange(highCards);
 
-                GetAsshole().SortCards();
-                GetPresident().SortCards();
-                GetPresident().Hand.Reverse();
-
-                GetAsshole().Hand.RemoveRange(0, 2);
-                GetPresident().Hand.RemoveRange(0, 2);
-
-
-                //var lowCards = new List<Card>();
-                //var highCards = new List<Card>();
-
-                //lowCards.Add(GetPresident().Hand[0]);
-                //lowCards.Add(GetPresident().Hand[1]);
-
-                //highCards.Add(GetAsshole().Hand[GetAsshole().Hand.Count - 1]);
-                //highCards.Add(GetAsshole().Hand[GetAsshole().Hand.Count - 2]);
-
-                //GetAsshole().Hand.AddRange(lowCards);
-                //GetPresident().Hand.AddRange(highCards);
-
-                //GetAsshole().SortCards();
-                //GetPresident().SortCards();
-                //GetPresident().Hand.Reverse();
-
-                //GetAsshole().Hand.RemoveRange(0, 2);
-                //GetAsshole().Hand.RemoveRange(0, 2);
-
-
-
-
-                ////president gives asshole lowest card
-                //GetAsshole().Hand.Add(GetPresident().Hand[0]);
-                //GetPresident().Hand.Remove(GetPresident().Hand[0]);
-                //GetPresident().SortCards();
-                //GetAsshole().SortCards();
-
-                ////asshole gives president highest card
-                //GetPresident().Hand.Add(GetAsshole().Hand[GetAsshole().Hand.Count - 1]);
-                //GetAsshole().Hand.Remove(GetAsshole().Hand[GetAsshole().Hand.Count - 1]);
-                //GetPresident().SortCards();
-                //GetAsshole().SortCards();
+                GetAsshole().Hand = GetAsshole().Hand.Except(highCards).ToList();
+                GetPresident().Hand = GetPresident().Hand.Except(lowCards).ToList();               
 
                 Commentary.SwapCards(GetPresident(), lowCards[0], lowCards[1], GetAsshole(), highCards[0], highCards[1]);
 
@@ -126,6 +88,23 @@ namespace ConsoleCards
         private static NPC GetAsshole()
         {
             return PlayerRanking[PlayerRanking.Count - 1];
+        }
+
+        public static void RankPlayers()
+        {
+            foreach (var player in PresidentsAndAssholes.AllPlayers)
+            {
+                player.Rank = "Neutral";
+            }
+            GetPresident().Rank = "President";
+            GetVicePresident().Rank = "Vice President";
+            GetViceAsshole().Rank = "Vice Asshole";
+            GetAsshole().Rank = "Asshole";//NPC.Rank can probably be removed entirely..
+
+            GetPresident().Score[0]++;
+            GetVicePresident().Score[1]++;
+            GetViceAsshole().Score[2]++;
+            GetAsshole().Score[3]++;
         }
     }
 

@@ -15,7 +15,7 @@ namespace ConsoleCards
             //add select game if there is ever more than one..
             //while (true)
             //{
-                var newGame = new PresidentsAndAssholes(3, 4);
+            var newGame = new PresidentsAndAssholes(3, 4);
             //}
 
             Console.ReadLine();
@@ -69,7 +69,10 @@ namespace ConsoleCards
 
             if (Ranking.PlayerRanking.Count != 0)
             {
+                //Commentary.ShowCards(PresidentsAndAssholes.AllPlayers);
+                Ranking.RankPlayers();
                 Ranking.SwapCards();
+                //Commentary.ShowCards(PresidentsAndAssholes.AllPlayers);
             }
 
         }
@@ -91,6 +94,9 @@ namespace ConsoleCards
                 while (PlayersInRound.Count > 1)//WHILE MORE THAN ONE PLAYERS REMAIN
                 {
                     foreach (var player in SeatingPlan) //FOR EACH PLAYER (RESERVING SEATING ORDER)
+                        //need to change this so that it finishes its loop if everyone passes the round, currently there is a bug if 
+                        //someone ends the round with a pass, they do not start the next round, when they should. maybe make this the
+                        //same logic if they pass before the starting card is played??
                     {
                         if (PlayersInRound.Count > 1
                             && PlayersInRound.Contains(player)
@@ -132,7 +138,7 @@ namespace ConsoleCards
                                         //FINISHED HAND
                                         PlayersInRound.Remove(player);//REMOVE PLAYER FROM ROUND
                                         Ranking.PlayerRanking.Add(player); //ADD PLAYER TO RANKING LIST
-                                        Commentary.PlayerRanked(player);
+                                        Commentary.PlayerRanked(player,PlayersInRound);
                                     }
                                     else
                                     {
@@ -147,13 +153,17 @@ namespace ConsoleCards
                 if (Ranking.PlayerRanking.Count == PresidentsAndAssholes.AllPlayers.Count - 1) //THIS PLAYER IS ASSHOLE //change to if playersnround == 1
                 {
                     Ranking.PlayerRanking.Add(PlayersInRound[0]);
-                    Commentary.PlayerRanked(PlayersInRound[0]);
+                    //PlayersInRound[0].AddPoints(Ranking.PlayerRanking.IndexOf(PlayersInRound[0]));
+                    Commentary.PlayerRanked(PlayersInRound[0],PlayersInRound); //wrong, will not work with more than 4 players
                     Commentary.ShowCards(PlayersInRound[0].Id.ToString(), PlayersInRound[0].Hand);
+                    PlayersInRound.Remove(PlayersInRound[0]); //not tested
                     //asshole cleans up cards
                     for (int i = 0; i < PresidentsAndAssholes.AllPlayers.Count - 1; i++)
                     {
                         PresidentsAndAssholes.AllPlayers[i].Hand.Clear();
                     }
+
+                    Commentary.ScoreBoard();
                     break;
                 }
                 else
