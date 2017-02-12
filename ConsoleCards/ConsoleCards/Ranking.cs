@@ -80,10 +80,10 @@ namespace ConsoleCards
                     highCards.Add(GetViceAsshole().Hand[GetViceAsshole().Hand.Count - 1]);
 
                     GetViceAsshole().Hand.Add(lowCards[0]);
-                    GetVicePresident().Hand.Remove(highCards[0]);
+                    GetVicePresident().Hand.Add(highCards[0]);
 
-                    GetVicePresident().Hand.Add(lowCards[0]);
                     GetViceAsshole().Hand.Remove(highCards[0]);
+                    GetVicePresident().Hand.Remove(lowCards[0]);
 
                     GetViceAsshole().SortCards();
                     GetVicePresident().SortCards();

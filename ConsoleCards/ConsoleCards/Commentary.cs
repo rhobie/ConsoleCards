@@ -61,39 +61,33 @@ namespace ConsoleCards
         }
 
         public static void PlayerRanked(NPC player)
-        {
-            if (Game.PlayersInRound.Count == 0)
+        {//THIS ISNT WORKING RIGHT
+            string rankingName;
+
+            if (Ranking.PlayerRanking.IndexOf(player) == 0)
             {
-                Console.WriteLine("\n **NPC {0} lost and is now the Asshole**", player.Id, Ranking.PlayerRanking.Count);
+                rankingName = "President";
             }
+            else if (Ranking.PlayerRanking.IndexOf(player) == 1)
+            {
+                rankingName = "Vice President";
+            }
+            else if (Ranking.PlayerRanking.IndexOf(player) == Ranking.PlayerRanking.Count - 1)
+            {
+                rankingName = "Vice Asshole";
+            }
+            //else if (Ranking.PlayerRanking.IndexOf(player) == Ranking.PlayerRanking.Count - 1)
+            //{
+            //    rankingName = "Asshole"; //fix this
+            //}
             else
             {
-                string rankingName;
-                switch (Ranking.PlayerRanking.Count)
-                {
-                    case 1:
-                        rankingName = "President";
-                        break;
-                    case 2:
-                        rankingName = "Vice President";
-                        break;
-                    case 3:
-                        rankingName = "Neutral";
-                        break;
-                    case 4:
-                        rankingName = "Vice Asshole";
-                        break;
-                    case 5:
-                        rankingName = "Asshole";
-                        break;
-                    case 0:
-                    default:
-                        rankingName = "Neutral";
-                        break;
-                }
-                Console.WriteLine("\n ** NPC {0} is out and has ranked {1} **\n", player.Id, rankingName);
+                rankingName = "Neutral";
             }
+
+            Console.WriteLine("\n ** NPC {0} is out and has ranked {1} **\n", player.Id, rankingName);
         }
+
 
         public static void SwapCards(NPC president, Card low1, Card low2, NPC Asshole, Card high1, Card high2)
         {
@@ -103,7 +97,7 @@ namespace ConsoleCards
         public static void SwapCards(NPC vicePresident, Card low, NPC viceAsshole, Card high)
         {
             Console.WriteLine("The vice-president ({0}) gave the vice-asshole ({1}) {2} in exchange for {3}\n",
-                vicePresident.Id.ToString(), viceAsshole.Id.ToString(), low.Shorthand,  high.Shorthand);
+                vicePresident.Id.ToString(), viceAsshole.Id.ToString(), low.Shorthand, high.Shorthand);
         }
 
         public static void ScoreBoard()

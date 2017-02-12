@@ -13,10 +13,10 @@ namespace ConsoleCards
             Console.OutputEncoding = System.Text.Encoding.Unicode;
 
             //add select game if there is ever more than one..
-            while (true)
-            {
+            //while (true)
+            //{
                 var newGame = new PresidentsAndAssholes(3, 4);
-            }
+            //}
 
             Console.ReadLine();
         }
