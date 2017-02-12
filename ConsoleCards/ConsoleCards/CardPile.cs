@@ -20,6 +20,10 @@ namespace ConsoleCards
             }
             else
             {
+                if (Cards[Cards.Count - 1] == null)
+                {
+                    Cards.Remove(Cards[Cards.Count - 1]);
+                }
                 //return top card
                 return Cards[Cards.Count - 1]; ;
             }

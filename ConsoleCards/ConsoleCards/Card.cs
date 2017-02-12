@@ -38,6 +38,7 @@ namespace ConsoleCards
             _value = Value.none;
             _name = "none";
             Tag = "empty";
+            cardDupCount = 0;
         }
 
         public Card(string uniqueId, Suit suit, Value value)
