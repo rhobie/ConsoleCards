@@ -15,7 +15,6 @@ namespace ConsoleCards
         {
             if (Cards.Count == 0)
             {
-                //return no card
                 return new Card();
             }
             else
@@ -24,7 +23,6 @@ namespace ConsoleCards
                 {
                     Cards.Remove(Cards[Cards.Count - 1]);
                 }
-                //return top card
                 return Cards[Cards.Count - 1]; ;
             }
         }

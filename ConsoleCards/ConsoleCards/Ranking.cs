@@ -13,7 +13,7 @@ namespace ConsoleCards
             {
                 player.SortCards();
             }
-
+            //messy beyond this point
             if (PlayerRanking.Count != 0)
             {
                 var lowCards = new List<Card>();

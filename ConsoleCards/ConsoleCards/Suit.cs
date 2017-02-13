@@ -7,7 +7,9 @@
         Diamonds,
         Hearts,
         Wild,
-        none
+        Red,
+        Black,
+        none,
     }
 }
 

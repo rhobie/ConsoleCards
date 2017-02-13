@@ -77,7 +77,7 @@ namespace ConsoleCards
         }
 
         public static void PlayerRanked(NPC player, List<NPC> playersInRound)
-        {//THIS ISNT WORKING RIGHT
+        {
             string rankingName;
 
             if (Ranking.PlayerRanking.IndexOf(player) == 0)
@@ -91,7 +91,7 @@ namespace ConsoleCards
 
             else if (player ==  playersInRound[0])
             {
-                rankingName = "Asshole"; //fix this
+                rankingName = "Asshole";
             }
             else if (Ranking.PlayerRanking.IndexOf(player) == Ranking.PlayerRanking.Count - 1)
             {

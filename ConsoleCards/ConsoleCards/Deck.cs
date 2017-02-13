@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ConsoleCards
 {
@@ -44,11 +43,13 @@ namespace ConsoleCards
             }
 
             //add jokers:
-            for (int i = 0; i < DeckRules.JokerCount; i++)
-            {
-                id++;
-                Cards.Add(new Card(id.ToString(), Suit.Wild, Value.Joker));
-            }
+            //for (int i = 1; i < DeckRules.JokerCount; i++)
+            //{
+            id++;
+            Cards.Add(new Card(id.ToString(), Suit.Red, Value.Joker));
+            id++;
+            Cards.Add(new Card(id.ToString(), Suit.Black, Value.Joker));
+            //}
 
             return Cards;
         }

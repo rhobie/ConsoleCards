@@ -13,7 +13,6 @@ namespace ConsoleCards
         public PresidentsAndAssholes(int rounds, int newNpcTotal)
         {
             _npcTotal = newNpcTotal;
-            //var ranking = new Ranking();
 
             //Add Players
             for (int i = 0; i < newNpcTotal; i++)
