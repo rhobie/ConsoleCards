@@ -9,11 +9,15 @@ namespace ConsoleCards
         public int Id;
         public List<Card> Hand { get; set; }
         public bool hasCards = false;
+        public int[] Score { get; set; }
+        public string Rank { get; set; }
 
         public NPC(int _activePlayers)
         {
+            Rank = "Neutral";
             Id = _activePlayers + 1;
             Hand = new List<Card>();
+            Score = new int[4] { 0, 0, 0, 0 };
         }
 
         public void SortCards()
@@ -22,25 +26,18 @@ namespace ConsoleCards
         }
         public void GroupCards(List<Card> hand)
         {
-            try
+            if (hand.Count != 0)
             {
-                if (hand.Count != 0)
+                hand.RemoveAll(x => x == null);
+                foreach (var card in hand)
                 {
-                    foreach (var card in hand)
+                    if (card.Tag != "empty")
                     {
-                        if (card.Tag != "empty")
-                        {
-                            card.cardDupCount = hand.FindAll(x => x.Value == card.Value).Count;
-                        }
+
+                        card.cardDupCount = hand.FindAll(x => x.Value == card.Value).Count;
                     }
                 }
-
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-
         }
 
 
@@ -106,6 +103,7 @@ namespace ConsoleCards
         {
             Commentary.ShowCards("NPC " + Id.ToString(), Hand);
         }
+
     }
 
 }

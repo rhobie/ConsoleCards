@@ -11,12 +11,9 @@ namespace ConsoleCards
         static void Main(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.Unicode;
+            Console.SetBufferSize(Console.BufferWidth, 8000); //max is 32766 but will not work correctly on xp and lower
 
-            //add select game if there is ever more than one..
-            //while (true)
-            //{
-            var newGame = new PresidentsAndAssholes(3, 4);
-            //}
+            var newGame = new PresidentsAndAssholes(50, 4);
 
             Console.ReadLine();
         }
@@ -46,7 +43,6 @@ namespace ConsoleCards
             //add NPCs to table
             for (int i = 0; i < PresidentsAndAssholes.npcTotal; i++)
             {
-                //PresidentsAndAssholes.AllPlayers[i].Hand.Clear();
                 SeatingPlan.Add(PresidentsAndAssholes.AllPlayers[i]);
                 PlayersInRound.Add(PresidentsAndAssholes.AllPlayers[i]);
             }
@@ -69,10 +65,8 @@ namespace ConsoleCards
 
             if (Ranking.PlayerRanking.Count != 0)
             {
-                //Commentary.ShowCards(PresidentsAndAssholes.AllPlayers);
                 Ranking.RankPlayers();
                 Ranking.SwapCards();
-                //Commentary.ShowCards(PresidentsAndAssholes.AllPlayers);
             }
 
         }
@@ -82,7 +76,7 @@ namespace ConsoleCards
             var roundDiscardPile = new CardPile();
             var discardPile = new CardPile();
 
-            while (PlayersInRound[0].Hand.Count > 0) // (PresidentsAndAssholes.PlayerRanking.Count < PresidentsAndAssholes.AllPlayers.Count) //WHILE PLAYERS HAVEN'T FINISHED
+            while (PlayersInRound[0].Hand.Count > 0)
             {
                 //start new round
                 foreach (var player in PassedPlayers)
@@ -108,8 +102,8 @@ namespace ConsoleCards
                             switch (cardToPlay[0].Tag)
                             {
                                 case "StartingCard":
-                                    player.Hand.RemoveAll(x => x.Tier == cardToPlay[0].Tier); //REMOVE STARTING CARD FROM HAND
-                                    roundDiscardPile.Cards.AddRange(cardToPlay); //ADD CARD TO PLAYED CARDS PILE
+                                    player.Hand.RemoveAll(x => x.Tier == cardToPlay[0].Tier);
+                                    roundDiscardPile.Cards.AddRange(cardToPlay);
                                     Commentary.StartingCard(roundDiscardPile, player, cardToPlay);
                                     break;
 
@@ -125,19 +119,19 @@ namespace ConsoleCards
                                     break;
 
                                 case "default":
+                                    //PLAY CARD
                                     foreach (var card in cardToPlay)
                                     {
-                                        player.Hand.Remove(card); //REMOVE CARDS FROM HAND
+                                        player.Hand.Remove(card);
                                     }
-                                    //player.Hand.RemoveAll(x => x.tier == cardToPlay[0].tier); //REMOVE CARD FROM HAND
-                                    roundDiscardPile.Cards.AddRange(cardToPlay); //ADD CARD TO PLAYED CARDS PILE
+                                    roundDiscardPile.Cards.AddRange(cardToPlay);
                                     Commentary.Play(roundDiscardPile, cardToPlay, player);
 
-                                    if (player.Hand.Count == 0) //IF PLAYER HAS NO MORE CARDS
+                                    if (player.Hand.Count == 0)
                                     {
                                         //FINISHED HAND
-                                        PlayersInRound.Remove(player);//REMOVE PLAYER FROM ROUND
-                                        Ranking.PlayerRanking.Add(player); //ADD PLAYER TO RANKING LIST
+                                        PlayersInRound.Remove(player);
+                                        Ranking.PlayerRanking.Add(player);
                                         Commentary.PlayerRanked(player,PlayersInRound);
                                     }
                                     else
@@ -146,17 +140,17 @@ namespace ConsoleCards
                                     }
                                     break;
                             }
-                            //Console.ReadLine(); //turn on to step through each turn
+                            //Console.ReadLine();
                         }
                     }
                 }
                 if (Ranking.PlayerRanking.Count == PresidentsAndAssholes.AllPlayers.Count - 1) //THIS PLAYER IS ASSHOLE //change to if playersnround == 1
                 {
                     Ranking.PlayerRanking.Add(PlayersInRound[0]);
-                    //PlayersInRound[0].AddPoints(Ranking.PlayerRanking.IndexOf(PlayersInRound[0]));
                     Commentary.PlayerRanked(PlayersInRound[0],PlayersInRound); //wrong, will not work with more than 4 players
                     Commentary.ShowCards(PlayersInRound[0].Id.ToString(), PlayersInRound[0].Hand);
-                    PlayersInRound.Remove(PlayersInRound[0]); //not tested
+                    PlayersInRound.Remove(PlayersInRound[0]);
+                    
                     //asshole cleans up cards
                     for (int i = 0; i < PresidentsAndAssholes.AllPlayers.Count - 1; i++)
                     {
@@ -171,7 +165,9 @@ namespace ConsoleCards
                     //WON ROUND
                     roundDiscardPile.MoveCardsToPile(discardPile);
                     SeatingPlan = ListItemToFrontOfListReservingOrder(
-                        SeatingPlan, PlayersInRound.Find(x => x.hasCards == true)); //PLAYER WHO WON ROUND STARTS
+                        SeatingPlan, PlayersInRound.Find(x => x.hasCards == true)); //PLAYER WHO WON ROUND STARTS, need to change
+                                                                                    //so that if they cant start next round the
+                                                                                    //next person in line does
                     Commentary.NewRound();
 
                 }
@@ -190,14 +186,6 @@ namespace ConsoleCards
         public int GetNextId(int currentId, int listCount)
         {
             return (currentId + 1 > listCount) ? (1) : (currentId + 1);
-        }
-
-        public void ShowAllHands()
-        {
-            for (int i = 0; i < SeatingPlan.Count; i++)
-            {
-                SeatingPlan[i].RevealHand();
-            }
         }
     }
 
