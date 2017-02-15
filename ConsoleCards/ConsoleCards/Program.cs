@@ -10,6 +10,7 @@ namespace ConsoleCards
         {
             Console.OutputEncoding = System.Text.Encoding.Unicode;
             Console.SetBufferSize(Console.BufferWidth, 8000); //max is 32766 but will not work correctly on xp and lower
+            Console.WindowHeight = Console.WindowHeight * 2;
 
             var newGame = new PresidentsAndAssholes(50, 4);
 
@@ -67,6 +68,16 @@ namespace ConsoleCards
                 Ranking.SwapCards();
             }
 
+            foreach (var player in PresidentsAndAssholes.AllPlayers)
+            {
+                if (player.Hand.FindAll(x => x.Value == Value.Joker).Count == 2)
+                {
+                    Console.WriteLine("\n\n\n--------------NPC {0} HAS TWO JOKERS-------------\n\n\n",player.Id);
+                }
+            }
+            {
+
+            }
         }
 
         public void StartRounds()

@@ -49,6 +49,10 @@ namespace ConsoleCards
             _name = (int)value == 13 ? "Joker" : string.Format("{0} of {1}", Value, Suit);
             _shorthand = ShorthandValue[(int)value] + GetSymbol();
             _tier = ((int)Value + 1) * 10;
+            if (_value == Value.Joker && _suit == Suit.Black)
+            {
+                _tier++;
+            }
             //_cardDupCount = 0; if this is ever zero something has gone wrong
 
             if (value == Value.Three && suit == Suit.Clubs)
