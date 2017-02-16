@@ -21,6 +21,7 @@ namespace ConsoleCards
     public class Game
     {
         public static List<NPC> PlayersInRound = new List<NPC>();
+        public static List<NPC> PlayerOrder = new List<NPC>();//remove
         public static List<NPC> SeatingPlan = new List<NPC>();
         public static List<NPC> PassedPlayers = new List<NPC>();
 
@@ -68,16 +69,7 @@ namespace ConsoleCards
                 Ranking.SwapCards();
             }
 
-            foreach (var player in PresidentsAndAssholes.AllPlayers)
-            {
-                if (player.Hand.FindAll(x => x.Value == Value.Joker).Count == 2)
-                {
-                    Console.WriteLine("\n\n\n--------------NPC {0} HAS TWO JOKERS-------------\n\n\n",player.Id);
-                }
-            }
-            {
-
-            }
+            Commentary.RoundsStart();
         }
 
         public void StartRounds()
@@ -97,9 +89,9 @@ namespace ConsoleCards
                 while (PlayersInRound.Count > 1)//WHILE MORE THAN ONE PLAYERS REMAIN
                 {
                     foreach (var player in SeatingPlan) //FOR EACH PLAYER (RESERVING SEATING ORDER)
-                        //need to change this so that it finishes its loop if everyone passes the round, currently there is a bug if 
-                        //someone ends the round with a pass, they do not start the next round, when they should. maybe make this the
-                        //same logic if they pass before the starting card is played??
+                                                        //need to change this so that it finishes its loop if everyone passes the round, currently there is a bug if 
+                                                        //someone ends the round with a pass, they do not start the next round, when they should. maybe make this the
+                                                        //same logic if they pass before the starting card is played??
                     {
                         if (PlayersInRound.Count > 1
                             && PlayersInRound.Contains(player)

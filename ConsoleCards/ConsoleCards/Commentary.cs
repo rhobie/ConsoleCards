@@ -13,6 +13,24 @@ namespace ConsoleCards
         public static void GameOver() { Console.WriteLine("\n GAME OVER"); }
         public static void GeneratingDeck() { Console.WriteLine("\n GENERATING DECK..."); }
 
+        public static void RoundsStart()
+        {
+            Console.WriteLine("\n\n\n-------------------------------------------------");
+            Console.WriteLine("----------------------NEW GAME-------------------");
+            Console.WriteLine("\n-------------------------------------------------\n\n");
+
+            Console.WriteLine("\n----------------NPCS SHOWING CARDS---------------n");
+
+            foreach (var player in PresidentsAndAssholes.AllPlayers)
+            {
+                player.RevealHand();
+                if (player.Hand.FindAll(x => x.Value == Value.Joker).Count == 2)
+                {
+                    Console.WriteLine("\n--------------NPC {0} HAS TWO JOKERS-------------\n", player.Id);
+                }
+            }
+        }
+
         public static void ShowCards(string who, List<Card> Cards)
         {
             Console.WriteLine("\n NPC {0} IS REVEALING REMAINING CARDS...", who);
@@ -89,7 +107,7 @@ namespace ConsoleCards
                 rankingName = "Vice President";
             }
 
-            else if (player ==  playersInRound[0])
+            else if (player == playersInRound[0])
             {
                 rankingName = "Asshole";
             }
@@ -124,7 +142,7 @@ namespace ConsoleCards
             {
                 int pnaScore = 0 + player.Score[0] - player.Score[3];
                 sb.Append(String.Format("\nNPC {0} Score: P:{1,2} | VP:{2,2} | VA:{3,2} | A:{4,2}   P&A: {5}",
-                    player.Id, player.Score[0], player.Score[1],player.Score[2], player.Score[3],pnaScore));
+                    player.Id, player.Score[0], player.Score[1], player.Score[2], player.Score[3], pnaScore));
 
             }
             Console.WriteLine(sb);

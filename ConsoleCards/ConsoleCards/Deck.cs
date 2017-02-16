@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ConsoleCards
 {
@@ -50,6 +51,7 @@ namespace ConsoleCards
             id++;
             Cards.Add(new Card(id.ToString(), Suit.Black, Value.Joker));
             //}
+            //TotalValueDebug();
 
             return Cards;
         }
@@ -58,7 +60,18 @@ namespace ConsoleCards
         {
             Cards.Shuffle();
         }
+        public void TotalValueDebug() // debugging method for calculating the new total value of the deck after adjustments to card.tier
+        {
+            int total = 0;
+            foreach (var card in Cards)
+            {
+                total += card.GetTeir();
+            }
+            Console.WriteLine(total);
+            Console.ReadLine();
+        }
     }
+
 
 }
 

@@ -7,6 +7,7 @@ namespace ConsoleCards
     {
         public int Id;
         public List<Card> Hand { get; set; }
+        private List<Card> _highlightedCards;
         public bool hasCards = false;
         public int[] Score { get; set; }
         public string Rank { get; set; }
@@ -42,60 +43,128 @@ namespace ConsoleCards
 
         public List<Card> SelectCardFromHand(Card TopDiscard, Card TopRoundCard)
         {
-            var cardRef = new List<Card>();
+            var _highlightedCards = new List<Card>();
 
             //FIRST CARD OF GAME:
             if (TopDiscard.Name == "none" && TopRoundCard.Name == "none") //if first card of the game
             {
                 if (Hand.Contains(Hand.Find(x => x.Tag == "StartingCard"))) //three of clubs is the starting card
                 {
-                    cardRef = Hand.FindAll(x => x.Value == Hand[0].Value);
+                    _highlightedCards = Hand.FindAll(x => x.Value == Hand[0].Value);
                 }
                 else
                 {
-                    cardRef.Add(new Card());
-                    cardRef[0].Tag = "NoStartingCard";
+                    _highlightedCards.Add(new Card());
+                    _highlightedCards[0].Tag = "NoStartingCard";
                 }
-                return cardRef;
+                return _highlightedCards;
             }
 
             //FIRST CARD OF ROUND:
             if (TopRoundCard.Tag == "empty")
             {
                 //play all of the lowest card in hand:
-                cardRef = Hand.FindAll(x => x.Tier == Hand[0].Tier);
+                _highlightedCards = Hand.FindAll(x => x.Tier == Hand[0].Tier);
                 //tag card(s) played with how many:
-                cardRef[0].cardDupCount = cardRef.Count;
-                return cardRef;
+                _highlightedCards[0].cardDupCount = _highlightedCards.Count;
+                return _highlightedCards;
             }
-            //CAN BEAT CARD:
-            if (Hand.Contains(Hand.Find(x => x.Tier > TopRoundCard.Tier && x.cardDupCount >= TopRoundCard.cardDupCount)))
+
+            //CAN JOKER A DOUBLE/TRIPLE/QUAD:
+            if (true)
             {
+
+            }
+
+            //CAN BEAT CARD:
+            if (Hand.Contains(Hand.Find(x => x.Tier > TopRoundCard.Tier && x.cardDupCount >= TopRoundCard.cardDupCount)) && TopRoundCard.Value != Value.Joker)
+            {
+                //will need to add to this section being able to beat 
+                if (WillPlayJokerEarly(TopRoundCard))
+                {
+                    _highlightedCards.Add(Hand.Find(x => x.Value == Value.Joker));
+                    return _highlightedCards;
+                }
+
                 int cardsToMatch = TopRoundCard.cardDupCount;
-                cardRef.Add(Hand.Find(x => x.Tier > TopRoundCard.Tier && x.cardDupCount >= TopRoundCard.cardDupCount));
+                _highlightedCards.Add(Hand.Find(x => x.Tier > TopRoundCard.Tier && x.cardDupCount >= TopRoundCard.cardDupCount));
 
                 for (int i = 0; i < cardsToMatch - 1; i++)
                 {
-                    cardRef.Add(Hand.Find(x => x.Value == cardRef[0].Value && x.Suit != cardRef[0].Suit));
+                    _highlightedCards.Add(Hand.Find(x => x.Value == _highlightedCards[0].Value && x.Suit != _highlightedCards[0].Suit));
                 }
-                GroupCards(cardRef);
-                return cardRef;
 
+                if (Hand.Count == 2 && Hand.FindAll(x => x.Value == Value.Joker).Count == 2)
+                {
+                    //currently this will never happen as the jokers will be played long before the npc has two cards
+                    _highlightedCards.Clear();
+                    _highlightedCards.AddRange(Hand);
+                }
+
+                GroupCards(_highlightedCards);
+                System.Console.Write("HAND VALUE = " + CalculateHandValue());
+
+                return _highlightedCards;
             }
-
-            //need to add to this so that NPC can make decisions rather than playing the lowest possible card(s) each hand
-
             else
             {
-                cardRef.Add(new Card());
-                cardRef[0].Tag = "Pass";
-                return cardRef;
+                _highlightedCards.Add(new Card());
+                _highlightedCards[0].Tag = "Pass";
+                return _highlightedCards;
             }
         }
 
-        public void Pass()
-        {
 
+
+        public bool WillPlayJokerEarly(Card TopRoundCard)
+        {
+            if (Hand.Contains(Hand.Find(x => x.Value == Value.Joker)))
+            {
+                int jokerCount = Hand.FindAll(x => x.Value == Value.Joker).Count;
+                if (jokerCount == 1)
+                {
+                    //if (Hand.Contains(Hand.Find(x => x.Tier > TopRoundCard.Tier && x.Value != Value.Joker && //DOES NOT WORK YET, dup logic is backwards-ish
+                    //!(x.Tier > TopRoundCard.Tier && x.cardDupCount >= TopRoundCard.cardDupCount)))) //if npc has a card that is higher than the toproundcard which is NOT a joker
+                    //{                                                                                //and is NOT a higher card than the toproundcard, that you have the same amount of cards as //maybe add and toproundcard.carddupcount != 1??
+                    //    return true;
+
+                    //}
+                    //if (CalculateHandValue() >) //need to refine this..
+                    //{
+                    //    //this is where a lot of the decision making will be..
+                    //}
+
+                    if (Hand.Count < 3) //will joker on second to last card
+                    {
+                        return true;
+                    }
+                }
+                else //jokerCount is 2
+                {
+                    if (true)
+                    {
+                        //this is where a lot of the decision making will be..
+                    }
+
+                    if (Hand.Count < 5) //will joker on fourth to last card
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public int CalculateHandValue()
+        {
+            int handValue = 0;
+            foreach (var card in Hand)
+            {
+                handValue += card.GetTeir();
+            }
+            handValue /= Hand.Count;
+
+            return handValue;
         }
 
         public void RevealHand()
@@ -107,3 +176,9 @@ namespace ConsoleCards
 
 }
 
+//DECSION MAKING TO ADD:
+
+// - if there is only one other player in the round and they passed the last round (when is was also just 2 players in round)
+//   then play cards in reverse order (not including jokers, twos or aces)
+
+// - 
