@@ -105,6 +105,7 @@ namespace ConsoleCards
                                 case "StartingCard":
                                     player.Hand.RemoveAll(x => x.Tier == cardToPlay[0].Tier);
                                     roundDiscardPile.Cards.AddRange(cardToPlay);
+                                    roundDiscardPile.GetTopCard().PlayedBy = player.Id.ToString();
                                     Commentary.StartingCard(roundDiscardPile, player, cardToPlay);
                                     break;
 
@@ -126,14 +127,16 @@ namespace ConsoleCards
                                         player.Hand.Remove(card);
                                     }
                                     roundDiscardPile.Cards.AddRange(cardToPlay);
+                                    roundDiscardPile.GetTopCard().PlayedBy = player.Id.ToString();
                                     Commentary.Play(roundDiscardPile, cardToPlay, player);
 
                                     if (player.Hand.Count == 0)
                                     {
                                         //FINISHED HAND
+                                        player.hasCards = false;
                                         PlayersInRound.Remove(player);
                                         Ranking.PlayerRanking.Add(player);
-                                        Commentary.PlayerRanked(player,PlayersInRound);
+                                        Commentary.PlayerRanked(player, PlayersInRound);
                                     }
                                     else
                                     {
@@ -148,10 +151,10 @@ namespace ConsoleCards
                 if (Ranking.PlayerRanking.Count == PresidentsAndAssholes.AllPlayers.Count - 1) //THIS PLAYER IS ASSHOLE //change to if playersnround == 1
                 {
                     Ranking.PlayerRanking.Add(PlayersInRound[0]);
-                    Commentary.PlayerRanked(PlayersInRound[0],PlayersInRound); //wrong, will not work with more than 4 players
+                    Commentary.PlayerRanked(PlayersInRound[0], PlayersInRound); //wrong, will not work with more than 4 players
                     Commentary.ShowCards(PlayersInRound[0].Id.ToString(), PlayersInRound[0].Hand);
                     PlayersInRound.Remove(PlayersInRound[0]);
-                    
+
                     //asshole cleans up cards
                     for (int i = 0; i < PresidentsAndAssholes.AllPlayers.Count - 1; i++)
                     {
@@ -163,12 +166,19 @@ namespace ConsoleCards
                 }
                 else
                 {
-                    //WON ROUND
+                    //SECOND PLACE
+                    var newStartingPlayer = PresidentsAndAssholes.AllPlayers.Find(x => x.Id.ToString() == roundDiscardPile.GetTopCard().PlayedBy);
+
+                    if (newStartingPlayer.Hand.Count != 0)
+                    {
+                        SeatingPlan = ListItemToFrontOfListReservingOrder(SeatingPlan, newStartingPlayer);
+                    }
+
+                    //PLAYER WHO WON ROUND STARTS, need to change
+                    //so that if they cant start next round the
+                    //next person in line does
                     roundDiscardPile.MoveCardsToPile(discardPile);
-                    SeatingPlan = ListItemToFrontOfListReservingOrder(
-                        SeatingPlan, PlayersInRound.Find(x => x.hasCards == true)); //PLAYER WHO WON ROUND STARTS, need to change
-                                                                                    //so that if they cant start next round the
-                                                                                    //next person in line does
+
                     Commentary.NewRound();
 
                 }

@@ -7,7 +7,7 @@ namespace ConsoleCards
     {
         public int Id;
         public List<Card> Hand { get; set; }
-        private List<Card> _highlightedCards;
+        //private List<Card> _highlightedCards;
         public bool hasCards = false;
         public int[] Score { get; set; }
         public string Rank { get; set; }
